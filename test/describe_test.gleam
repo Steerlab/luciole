@@ -4,6 +4,10 @@ import luciole/expect
 pub fn describe_tests() {
   describe("example_project", [
     describe("2 + 2", [
+      it("= 2", fn() {
+        1 + 1
+        |> expect.to_equal(2)
+      }),
       it("= 4", fn() {
         2 + 2
         |> expect.to_equal(4)
