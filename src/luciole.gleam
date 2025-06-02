@@ -8,7 +8,7 @@ pub fn main() {
 }
 
 pub fn it(name: String, body: TestBody) -> TestTree {
-  TestCase(name, body, False) |> test_tree.Test
+  TestCase(name, body, False) |> test_tree.LeafTest
 }
 
 pub fn describe(name: String, suite: List(TestTree)) -> TestTree {
