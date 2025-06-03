@@ -1,7 +1,6 @@
 import gleam/string
-import luciole/test_tree.{
-  type Body, type TestCase, type TestTree, Suite, TestCase,
-}
+import luciole/leaf.{type Body}
+import luciole/test_tree.{type TestTree}
 
 pub fn to_cypress_code(test_tree: TestTree) {
   test_tree.to_cypress_code(test_tree)
@@ -9,25 +8,29 @@ pub fn to_cypress_code(test_tree: TestTree) {
 }
 
 pub fn it(name: String, body: Body) -> TestTree {
-  TestCase(name, body, False) |> test_tree.LeafTest
+  leaf.TestCase(name, body, False) |> test_tree.LeafTest
 }
 
 pub fn describe(name: String, suite: List(TestTree)) -> TestTree {
-  Suite(name, suite)
+  test_tree.Suite(name, suite)
 }
 
 pub fn before(body: Body) -> TestTree {
-  test_tree.Before(body) |> test_tree.LeafHook
+  leaf.Before(body) |> test_tree.LeafHook
 }
 
 pub fn before_each(body: Body) -> TestTree {
-  test_tree.BeforeEach(body) |> test_tree.LeafHook
+  leaf.BeforeEach(body) |> test_tree.LeafHook
 }
 
 pub fn after(body: Body) -> TestTree {
-  test_tree.After(body) |> test_tree.LeafHook
+  leaf.After(body) |> test_tree.LeafHook
 }
 
 pub fn after_each(body: Body) -> TestTree {
-  test_tree.AfterEach(body) |> test_tree.LeafHook
+  leaf.AfterEach(body) |> test_tree.LeafHook
+}
+
+pub fn expect(fun: fn() -> Bool) -> Body {
+  leaf.Expect(fun)
 }
