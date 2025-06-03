@@ -1,5 +1,5 @@
 import gleam/string
-import luciole/leaf.{type Body}
+import luciole/leaf.{type Body, type Step}
 import luciole/test_tree.{type TestTree}
 
 pub fn to_cypress_code(test_tree: TestTree) {
@@ -31,6 +31,6 @@ pub fn after_each(body: Body) -> TestTree {
   leaf.AfterEach(body) |> test_tree.LeafHook
 }
 
-pub fn expect(fun: fn() -> Bool) -> Body {
+pub fn expect(fun: fn() -> Bool) -> Step {
   leaf.Expect(fun)
 }

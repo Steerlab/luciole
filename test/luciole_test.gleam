@@ -9,15 +9,13 @@ pub fn main() {
 }
 
 pub fn simple_test() {
-  io.println("")
-
   describe_test.it_test()
   |> luciole.to_cypress_code
   |> io.println
 }
 
 pub fn all_tests() {
-  let tests_fun = [
+  let test_funs = [
     describe_test.it_test,
     describe_test.describe_test,
     describe_test.more_describe_test,
@@ -25,7 +23,7 @@ pub fn all_tests() {
     describe_test.auth_token_test,
   ]
 
-  list.map(tests_fun, with: fn(f) {
+  list.map(test_funs, with: fn(f) {
     f() |> luciole.to_cypress_code |> io.println
     io.println("")
   })

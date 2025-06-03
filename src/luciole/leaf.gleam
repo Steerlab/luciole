@@ -6,10 +6,13 @@ pub type CypressFunction {
   CypressFunction(name: String, args: List(String))
 }
 
-pub type Body {
+pub type Step {
   Instruct(CypressFunction)
   Expect(fn() -> Bool)
 }
+
+pub type Body =
+  List(Step)
 
 pub type TestCase {
   TestCase(name: String, body: Body, skipped: Bool)
@@ -51,6 +54,14 @@ pub fn hook_to_cypress_code(hook: Hook) -> List(String) {
 
 fn body_to_cypress_test(body: Body) -> List(String) {
   case body {
+    [] -> []
+    [step, ..tail] ->
+      list.flatten([step_to_cypress_test(step), body_to_cypress_test(tail)])
+  }
+}
+
+fn step_to_cypress_test(step: Step) -> List(String) {
+  case step {
     Instruct(cy_fun) -> cy_fun_to_cypress_code(cy_fun)
     Expect(_fun) -> ["expect(function)"]
   }
