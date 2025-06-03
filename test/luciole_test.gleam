@@ -4,23 +4,25 @@ import gleam/list
 import luciole
 
 pub fn main() {
+  io.println("")
   all_tests()
 }
 
 pub fn simple_test() {
   io.println("")
 
-  describe_test.it_tests()
+  describe_test.it_test()
   |> luciole.to_cypress_code
   |> io.println
 }
 
 pub fn all_tests() {
   let tests_fun = [
-    describe_test.it_tests,
-    describe_test.describe_tests,
-    describe_test.more_describe_tests,
-    describe_test.hook_tests,
+    describe_test.it_test,
+    describe_test.describe_test,
+    describe_test.more_describe_test,
+    describe_test.hook_test,
+    describe_test.auth_token_test,
   ]
 
   list.map(tests_fun, with: fn(f) {

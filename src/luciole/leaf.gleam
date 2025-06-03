@@ -1,4 +1,5 @@
 import gleam/list
+import gleam/string
 import luciole/code
 
 pub type CypressFunction {
@@ -48,6 +49,15 @@ pub fn hook_to_cypress_code(hook: Hook) -> List(String) {
   ])
 }
 
-fn body_to_cypress_test(_body: Body) -> List(String) {
-  ["body"]
+fn body_to_cypress_test(body: Body) -> List(String) {
+  case body {
+    Instruct(cy_fun) -> cy_fun_to_cypress_code(cy_fun)
+    Expect(_fun) -> ["expect(function)"]
+  }
+}
+
+fn cy_fun_to_cypress_code(fun: CypressFunction) -> List(String) {
+  let CypressFunction(name, args) = fun
+  let args = args |> string.join(", ")
+  ["cy." <> name <> "(" <> args <> ")"]
 }
