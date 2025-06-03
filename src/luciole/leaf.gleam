@@ -2,18 +2,6 @@ import gleam/list
 import gleam/string
 import luciole/code
 
-pub type CypressFunction {
-  CypressFunction(name: String, args: List(String))
-}
-
-pub type Step {
-  Instruct(CypressFunction)
-  Expect(fn() -> Bool)
-}
-
-pub type Body =
-  List(Step)
-
 pub type TestCase {
   TestCase(name: String, body: Body, skipped: Bool)
 }
@@ -23,6 +11,18 @@ pub type Hook {
   BeforeEach(Body)
   After(Body)
   AfterEach(Body)
+}
+
+pub type Body =
+  List(Step)
+
+pub type Step {
+  Instruct(CypressFunction)
+  Expect(fn() -> Bool)
+}
+
+pub type CypressFunction {
+  CypressFunction(name: String, args: List(String))
 }
 
 pub fn test_to_cypress_code(test_case: TestCase) -> List(String) {
