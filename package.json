@@ -1,0 +1,11 @@
+{
+  "name": "luciole",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:Steerlab/luciole.git",
+  "author": "<adele.desmazi@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^14.4.1"
+  }
+}

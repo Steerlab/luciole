@@ -3,7 +3,7 @@ import luciole/cy
 import luciole/should
 
 pub fn it_test() {
-  it("Goes to root", [cy.visit("/")])
+  it("Goes to Cypress example page", [cy.visit("https://example.cypress.io")])
 }
 
 pub fn describe_test() {
