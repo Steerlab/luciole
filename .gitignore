@@ -3,3 +3,4 @@
 /build
 erl_crash.dump
 ignore
+node_modules
