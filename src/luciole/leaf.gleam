@@ -67,7 +67,7 @@ fn body_to_cypress_test(body: Body) -> List(String) {
 fn step_to_cypress_test(step: Step) -> List(String) {
   case step {
     Instruct(cy_fun) -> cy_fun_to_cypress_code(cy_fun)
-    Expect(_fun) -> ["expect(function)"]
+    Expect(_fun) -> ["expect()"]
   }
 }
 

@@ -16,7 +16,7 @@ pub fn to_cypress_code(test_tree: TestTree) -> List(String) {
       list.flatten([
         ["describe('" <> name <> "', function () {"],
         code.indent(suite_to_cypress_code(suite)),
-        ["}"],
+        ["})"],
       ])
   }
 }
