@@ -1,6 +1,6 @@
-import luciole.{after, after_each, before, before_each, describe, expect, it}
+import luciole.{after, after_each, before, before_each, describe, it}
 import luciole/cy
-import luciole/expect
+import luciole/should
 
 pub fn it_test() {
   it("Goes to root", [cy.visit("/")])
@@ -8,49 +8,36 @@ pub fn it_test() {
 
 pub fn describe_test() {
   describe("example_project", [
-    describe("2 + 2 - 1", [
-      it("= 3", [
-        expect(fn() {
-          2 + 2 - 1
-          |> expect.to_equal(3)
-        }),
-      ]),
-    ]),
+    describe("2 + 2 - 1", [it("= 3", [2 + 2 - 1 |> should.equal(3)])]),
   ])
 }
 
 pub fn more_describe_test() {
   describe("example_project", [
-    describe("2 + 2", [
-      it("= 2", [
-        expect(fn() {
-          1 + 1
-          |> expect.to_equal(2)
-        }),
-      ]),
-      it("= 4", [
-        expect(fn() {
-          2 + 2
-          |> expect.to_equal(4)
-        }),
-      ]),
+    describe("sums", [
+      it("1 + 1 = 2", [1 + 1 |> should.equal(2)]),
+      it("2 + 2 = 4", [2 + 2 |> should.equal(4)]),
     ]),
   ])
 }
 
 pub fn hook_test() {
   describe("5 + 0", [
-    before([expect(fn() { True })]),
-    before_each([expect(fn() { True })]),
-    after([expect(fn() { True })]),
-    after_each([expect(fn() { True })]),
-    it("= 5", [expect(fn() { 5 + 0 |> expect.to_equal(5) })]),
+    before([2 |> should.equal(2)]),
+    before_each([2 |> should.equal(2)]),
+    after([2 |> should.equal(2)]),
+    after_each([2 |> should.equal(2)]),
+    it("= 5", [5 + 0 |> should.equal(5)]),
   ])
 }
 
 pub fn auth_token_test() {
   describe("Auth0", [
-    before_each([expect(fn() { True })]),
-    it("shows onboarding", [cy.visit("/"), cy.get("[data-cy=\"catchphrase\"]")]),
+    before_each([2 |> should.equal(2)]),
+    it("shows onboarding", [
+      cy.visit("/"),
+      cy.get("[data-cy=\"catchphrase\"]"),
+      // |> should.be_visible(),
+    ]),
   ])
 }

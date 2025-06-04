@@ -18,7 +18,11 @@ pub type Body =
 
 pub type Step {
   Instruct(CypressFunction)
-  Expect(fn() -> Bool)
+  Expect(Assertion)
+}
+
+pub type Assertion {
+  Assertion(actual: Int, name: String, args: List(Int))
 }
 
 pub type CypressFunction {
