@@ -5,6 +5,7 @@ describe('Auth0', function () {
   
   it('shows onboarding', function () {
     cy.visit('/')
-    cy.get('[data-cy="catchphrase"]')
+    expect()
+    expect()
   })
 })

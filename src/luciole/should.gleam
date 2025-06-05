@@ -1,9 +1,18 @@
-import luciole/leaf.{type Assertion, Assertion, Expect}
+import luciole/leaf.{Assert, One, Should}
+import luciole/unsafe/unsafe
 
-pub fn equal(actual: Int, expected: Int) {
-  Expect(Assertion(actual, "equal", [expected]))
+pub fn equal(actual: a, expected: a) {
+  One(
+    Assert(
+      Should(actual: unsafe.coerce(actual), name: "equal", args: [
+        unsafe.coerce(expected),
+      ]),
+    ),
+  )
 }
 
-pub fn be_visible(actual: Int) {
-  Expect(Assertion(actual, "be.visible", []))
+pub fn be_visible(actual: a) {
+  One(
+    Assert(Should(actual: unsafe.coerce(actual), name: "be.visible", args: [])),
+  )
 }

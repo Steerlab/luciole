@@ -3,6 +3,7 @@ import gleam/io
 import gleam/list
 import luciole
 import luciole/test_tree
+import pprint
 import simplifile
 
 pub fn main() {
@@ -43,6 +44,7 @@ pub fn all_tests() {
     let _ = simplifile.delete(filepath)
     test_fun()
     |> luciole.to_cypress_code
+    |> pprint.debug
     |> luciole.make_test_file(at: filepath)
   })
 }

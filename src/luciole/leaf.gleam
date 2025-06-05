@@ -1,3 +1,4 @@
+import gleam/dynamic.{type Dynamic}
 import gleam/list
 import gleam/string
 import luciole/code
@@ -14,15 +15,24 @@ pub type Hook {
 }
 
 pub type Body =
-  List(Step)
+  List(Chain)
+
+pub type Chain {
+  One(Step)
+  Multiple(Step, followed_by: Chain)
+}
 
 pub type Step {
   Instruct(CypressFunction)
-  Expect(Assertion)
+  Assert(Should)
 }
 
-pub type Assertion {
-  Assertion(actual: Int, name: String, args: List(Int))
+pub type Should {
+  Should(actual: Dynamic, name: String, args: List(Dynamic))
+}
+
+pub type Expect {
+  Expect(actual: Dynamic, name: String, args: List(Dynamic))
 }
 
 pub type CypressFunction {
@@ -59,15 +69,29 @@ pub fn hook_to_cypress_code(hook: Hook) -> List(String) {
 fn body_to_cypress_test(body: Body) -> List(String) {
   case body {
     [] -> []
-    [step, ..tail] ->
-      list.flatten([step_to_cypress_test(step), body_to_cypress_test(tail)])
+    [chain, ..tail] ->
+      list.flatten([chain_to_cypress_test(chain), body_to_cypress_test(tail)])
+  }
+}
+
+fn chain_to_cypress_test(chain: Chain) -> List(String) {
+  // TODO: add cy. at begining of chains
+  // ["cy.", ..code.indent(rec_chain(chain))]
+  rec_chain(chain)
+}
+
+fn rec_chain(chain: Chain) {
+  case chain {
+    One(step) -> step_to_cypress_test(step)
+    Multiple(step, followed_by) ->
+      list.flatten([step_to_cypress_test(step), rec_chain(followed_by)])
   }
 }
 
 fn step_to_cypress_test(step: Step) -> List(String) {
   case step {
     Instruct(cy_fun) -> cy_fun_to_cypress_code(cy_fun)
-    Expect(_fun) -> ["expect()"]
+    Assert(_fun) -> ["expect()"]
   }
 }
 

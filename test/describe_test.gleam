@@ -23,7 +23,7 @@ pub fn more_describe_test() {
 
 pub fn hook_test() {
   describe("5 + 0", [
-    before([2 |> should.equal(2)]),
+    before([True |> should.equal(True)]),
     before_each([2 |> should.equal(2)]),
     after([2 |> should.equal(2)]),
     after_each([2 |> should.equal(2)]),
@@ -36,8 +36,8 @@ pub fn auth_token_test() {
     before_each([2 |> should.equal(2)]),
     it("shows onboarding", [
       cy.visit("/"),
-      cy.get("[data-cy=\"catchphrase\"]"),
-      // |> should.be_visible(),
+      cy.get("[data-cy=\"catchphrase\"]") |> should.be_visible(),
+      cy.contains("Overview") |> should.be_visible(),
     ]),
   ])
 }
