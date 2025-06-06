@@ -38,7 +38,7 @@ fn pprint_function(fun: glance.Function) -> List(String) {
 fn pprint_statement(statement: glance.Statement) -> List(String) {
   case statement {
     glance.Expression(expression) -> pprint_expression(expression)
-    _ -> ["TODO"]
+    _ -> ["TODO-1"]
   }
 }
 
@@ -56,32 +56,50 @@ fn pprint_expression(expression: glance.Expression) -> List(String) {
         [""],
       ])
     }
+
     glance.Call(
       _location,
       glance.Variable(_location2, "it"),
-      [glance.UnlabelledField(glance.String(_location3, name)), ..],
+      [glance.UnlabelledField(glance.String(_location3, name)), ..args],
     ) ->
       list.flatten([
         ["it('" <> name <> "', fn() {"],
-        code.indent(["TODO"]),
+        code.indent(pprint_args(args)),
         ["})"],
       ])
     glance.List(_location, elements, _rest) -> {
       elements |> list.map(pprint_expression) |> list.flatten
     }
-    _ -> ["TODO"]
+
+    glance.Call(
+      _location,
+      glance.FieldAccess(_location2, glance.Variable(_location3, "cy"), label),
+      args,
+    ) ->
+      list.flatten([
+        ["cy." <> label <> "("],
+        code.indent(pprint_args(args)),
+        [")"],
+      ])
+
+    glance.Fn(_location, _arguments, _return_annotation, body) ->
+      body |> list.map(pprint_statement) |> list.flatten
+
+    glance.String(_location, s) -> ["'" <> s <> "'"]
+
+    _ -> ["TODO-3"]
   }
 }
 
 fn pprint_args(args: List(glance.Field(glance.Expression))) {
-  args |> list.map(fn(arg) { pprint_arg(arg) }) |> list.flatten
+  args |> list.map(fn(arg) { pprint_field(arg) }) |> list.flatten
 }
 
-fn pprint_arg(arg: glance.Field(glance.Expression)) {
-  case arg {
+fn pprint_field(field: glance.Field(glance.Expression)) {
+  case field {
     glance.UnlabelledField(expression) -> {
       pprint_expression(expression)
     }
-    _ -> ["TODO"]
+    _ -> ["TODO-4"]
   }
 }
