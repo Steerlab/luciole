@@ -5,5 +5,5 @@ pub fn it_test() {
 }
 
 pub fn describe_test() {
-  describe("project", [it("does nothing", fn() { Nil })])
+  describe("project", [it("describes nothing", fn() { Nil })])
 }
