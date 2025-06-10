@@ -2,6 +2,7 @@ import glance
 import gleam/list
 import gleam/string
 import luciole/code
+import luciole/should
 import pprint
 import simplifile
 
@@ -16,13 +17,26 @@ pub fn describe(_name: String, suite: List(Body)) {
   suite
 }
 
-pub fn get_ast(filepath: String) {
-  let assert Ok(code) = simplifile.read(from: filepath)
-  let assert Ok(parsed) = glance.module(code)
-  pprint.debug(pprint(parsed))
+pub fn make_test_file(at path: String, contents contents: String) -> Nil {
+  case simplifile.create_file(path) {
+    Ok(_) -> {
+      let _ = simplifile.write(to: path, contents: contents)
+      Nil
+    }
+    Error(_) -> {
+      echo "File " <> path <> " already exists. Please delete it."
+      Nil
+    }
+  }
 }
 
-pub fn pprint(parsed: glance.Module) -> String {
+pub fn get_code(filepath: String) {
+  let assert Ok(code) = simplifile.read(from: filepath)
+  code
+}
+
+pub fn pprint(code: String) -> String {
+  let assert Ok(parsed) = glance.module(code)
   parsed.functions
   |> list.map(fn(definition) { pprint_function(definition.definition) })
   |> list.flatten
@@ -92,10 +106,25 @@ fn pprint_expression(expression: glance.Expression) -> List(String) {
       args,
     ) -> pprint_should(label, args)
 
+    glance.BinaryOperator(
+      _location,
+      glance.Pipe,
+      call,
+      glance.Call(
+        _location2,
+        glance.FieldAccess(
+          _location3,
+          glance.Variable(_location3, "should"),
+          label,
+        ),
+        args,
+      ),
+    ) -> pprint_should(label, [glance.UnlabelledField(call), ..args])
+
     glance.Fn(_location, _arguments, _return_annotation, body) ->
       body |> list.map(pprint_statement) |> list.flatten
 
-    glance.String(_location, s) -> ["'" <> s <> "'"]
+    glance.String(_location, value) -> ["'" <> value <> "'"]
 
     e -> {
       pprint.debug(e)
@@ -118,18 +147,18 @@ fn pprint_field(field: glance.Field(glance.Expression)) {
 }
 
 fn pprint_should(
-  label: String,
+  method: String,
   args: List(glance.Field(glance.Expression)),
 ) -> List(String) {
   // valid if every should.function() takes at least one argument
-  let assert [prev, ..args] = args
+  let assert [chainers, ..value] = args
 
-  let args =
+  let should_args =
     list.flatten([
       [".should("],
-      code.indent(["'" <> label <> "', "]),
-      code.indent(pprint_args(args)),
+      code.indent(["'" <> should.method_to_chai(method) <> "', "]),
+      code.indent(pprint_args(value)),
       [")"],
     ])
-  list.flatten([pprint_field(prev), code.indent(args)])
+  list.flatten([pprint_field(chainers), code.indent(should_args)])
 }
