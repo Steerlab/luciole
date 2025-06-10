@@ -38,7 +38,7 @@ fn pprint_function(fun: glance.Function) -> List(String) {
 fn pprint_statement(statement: glance.Statement) -> List(String) {
   case statement {
     glance.Expression(expression) -> pprint_expression(expression)
-    _ -> ["TODO-1"]
+    _ -> ["TODO_1"]
   }
 }
 
@@ -63,7 +63,7 @@ fn pprint_expression(expression: glance.Expression) -> List(String) {
       [glance.UnlabelledField(glance.String(_location3, name)), ..args],
     ) ->
       list.flatten([
-        ["it('" <> name <> "', fn() {"],
+        ["it('" <> name <> "', function() {"],
         code.indent(pprint_args(args)),
         ["})"],
       ])
@@ -82,12 +82,25 @@ fn pprint_expression(expression: glance.Expression) -> List(String) {
         [")"],
       ])
 
+    glance.Call(
+      _location,
+      glance.FieldAccess(
+        _location2,
+        glance.Variable(_location3, "should"),
+        label,
+      ),
+      args,
+    ) -> pprint_should(label, args)
+
     glance.Fn(_location, _arguments, _return_annotation, body) ->
       body |> list.map(pprint_statement) |> list.flatten
 
     glance.String(_location, s) -> ["'" <> s <> "'"]
 
-    _ -> ["TODO-3"]
+    e -> {
+      pprint.debug(e)
+      ["TODO_3"]
+    }
   }
 }
 
@@ -100,6 +113,23 @@ fn pprint_field(field: glance.Field(glance.Expression)) {
     glance.UnlabelledField(expression) -> {
       pprint_expression(expression)
     }
-    _ -> ["TODO-4"]
+    _ -> ["TODO_4"]
   }
+}
+
+fn pprint_should(
+  label: String,
+  args: List(glance.Field(glance.Expression)),
+) -> List(String) {
+  // valid if every should.function() takes at least one argument
+  let assert [prev, ..args] = args
+
+  let args =
+    list.flatten([
+      [".should("],
+      code.indent(["'" <> label <> "', "]),
+      code.indent(pprint_args(args)),
+      [")"],
+    ])
+  list.flatten([pprint_field(prev), code.indent(args)])
 }
