@@ -2,6 +2,7 @@ import glance
 import gleam/list
 import gleam/string
 import luciole/code
+import luciole/expect
 import luciole/should
 import pprint
 import simplifile
@@ -121,6 +122,16 @@ fn pprint_expression(expression: glance.Expression) -> List(String) {
       ),
     ) -> pprint_should(label, [glance.UnlabelledField(call), ..args])
 
+    glance.Call(
+      _location,
+      glance.FieldAccess(
+        _location2,
+        glance.Variable(_location3, "expect"),
+        label,
+      ),
+      args,
+    ) -> pprint_expect(label, args)
+
     glance.Fn(_location, _arguments, _return_annotation, body) ->
       body |> list.map(pprint_statement) |> list.flatten
 
@@ -156,9 +167,20 @@ fn pprint_should(
   let should_args =
     list.flatten([
       [".should("],
-      code.indent(["'" <> should.method_to_chai(method) <> "', "]),
+      code.indent(["'" <> should.method_to_chai(method) <> "',"]),
       code.indent(pprint_args(value)),
       [")"],
     ])
   list.flatten([pprint_field(chainers), code.indent(should_args)])
+}
+
+fn pprint_expect(
+  method: String,
+  args: List(glance.Field(glance.Expression)),
+) -> List(String) {
+  list.flatten([
+    ["expect("],
+    code.indent(pprint_args(args)),
+    [")." <> expect.method_to_chai(method)],
+  ])
 }

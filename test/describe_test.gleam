@@ -1,5 +1,6 @@
 import luciole.{describe, it}
 import luciole/cy
+import luciole/expect
 import luciole/should
 
 // pub fn it_test() {
@@ -13,6 +14,7 @@ pub fn describe_test() {
       should.include(cy.get("body"), "Kitchen")
       cy.get("body") |> should.include("Kitchen")
       cy.get("body") |> should.be_visible()
+      expect.to_be_true(True)
     }),
   ])
 }

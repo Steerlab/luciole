@@ -7,21 +7,24 @@ describe('project', [
       'body'
     )
       .should(
-        'contain', 
+        'contain',
         'Kitchen'
       )
     cy.get(
       'body'
     )
       .should(
-        'contain', 
+        'contain',
         'Kitchen'
       )
     cy.get(
       'body'
     )
       .should(
-        'be.visible', 
+        'be.visible',
       )
+    expect(
+      true
+    ).to.be.true
   })
 ])
