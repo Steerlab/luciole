@@ -6,6 +6,10 @@
   "author": "<adele.desmazi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "cypress": "^14.4.1"
+    "cypress": "^14.4.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.0"
   }
 }

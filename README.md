@@ -1,7 +1,9 @@
 # luciole
 
-[![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
-[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/)
+The CLI for compiling Gleam tests to Cypress tests.
+
+<!-- [![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/) -->
 
 ```sh
 gleam add luciole@1
@@ -14,11 +16,14 @@ pub fn main() {
 }
 ```
 
-Further documentation can be found at <https://hexdocs.pm/luciole>.
+<!-- Further documentation can be found at <https://hexdocs.pm/luciole>. -->
 
 ## Development
 
 ```sh
 gleam run   # Run the project
 gleam test  # Run the tests
+
+yarn tsc
+node dist/index.js [command]
 ```
