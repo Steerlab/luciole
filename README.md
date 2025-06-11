@@ -21,9 +21,11 @@ pub fn main() {
 ## Development
 
 ```sh
+cd gleam
 gleam run   # Run the project
 gleam test  # Run the tests
 
+cd cli
 yarn tsc
 node dist/index.js [command]
 ```
