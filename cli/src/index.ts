@@ -1,8 +1,7 @@
 import { Command } from 'commander';
 
-// console.log("Hello, world!");
-
 const program = new Command();
+const execSync = require('child_process').execSync;
 
 program
   .name('my-cli')
@@ -15,5 +14,16 @@ program
   .action(() => {
     console.log('Hello, world!');
   });
+
+program
+  .command('gleam-build')
+  .description('Compiles Gleam test files')
+  .action(() => {
+    compile_gleam();
+  });
+
+function compile_gleam() {
+  const output = execSync('gleam build --target=js', { encoding: 'utf-8', cwd: './../gleam/' });
+}
 
 program.parse(process.argv);
