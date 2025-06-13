@@ -6,10 +6,15 @@
   "author": "<adele.desmazi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/escodegen": "^0.0.10",
+    "@types/espree": "^10.1.0",
+    "@types/node": "^24.0.1",
     "cypress": "^14.4.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "commander": "^14.0.0"
+    "commander": "^14.0.0",
+    "escodegen": "^2.1.0",
+    "espree": "^10.4.0"
   }
 }
