@@ -47,6 +47,18 @@
     acorn "^8.12.0"
     eslint-visitor-keys "^4.0.0"
 
+"@types/estraverse@^5.1.7":
+  version "5.1.7"
+  resolved "https://registry.npmjs.org/@types/estraverse/-/estraverse-5.1.7.tgz"
+  integrity sha512-JRVtdKYZz7VkNp7hMC/WKoiZ8DS3byw20ZGoMZ1R8eBrBPIY7iBaDAS1zcrnXQCwK44G4vbXkimeU7R0VLG8UQ==
+  dependencies:
+    "@types/estree" "*"
+
+"@types/estree@*":
+  version "1.0.8"
+  resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.8.tgz"
+  integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
+
 "@types/node@*", "@types/node@^24.0.1":
   version "24.0.1"
   resolved "https://registry.npmjs.org/@types/node/-/node-24.0.1.tgz"

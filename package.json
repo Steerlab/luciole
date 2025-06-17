@@ -8,6 +8,7 @@
   "devDependencies": {
     "@types/escodegen": "^0.0.10",
     "@types/espree": "^10.1.0",
+    "@types/estraverse": "^5.1.7",
     "@types/node": "^24.0.1",
     "cypress": "^14.4.1",
     "typescript": "^5.8.3"
