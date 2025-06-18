@@ -1,6 +1,7 @@
-# luciole
+# Luciole
 
 The CLI for compiling Gleam tests to Cypress tests.
+And a Cypress API in Gleam.
 
 <!-- [![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/) -->
@@ -8,6 +9,7 @@ The CLI for compiling Gleam tests to Cypress tests.
 ```sh
 gleam add luciole@1
 ```
+
 ```gleam
 import luciole
 
@@ -20,12 +22,22 @@ pub fn main() {
 
 ## Development
 
+Cypress API in Gleam:
 ```sh
 cd gleam
-gleam run   # Run the project
-gleam test  # Run the tests
+gleam run # Run the project
+gleam test # Run the tests
+gleam build --target=js # Compile the project and tests to JavaScript
+```
 
+JavaScript CLI:
+```sh
 cd cli
-yarn tsc
-node dist/index.js [command]
+yarn tsc # Compile the project
+node dist/index.js [command] # Run the project
+```
+
+Cypress:
+```sh
+yarn cypress open # Open Cypress
 ```
