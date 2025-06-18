@@ -32,6 +32,7 @@ program
   .description('Creates an AST from a JavaScript file, parse it and generate the resulting code. ')
   .action(() => {
     transpile_js("../gleam/build/dev/javascript/luciole/describe_test.mjs");
+    // transpile_js("../ignore/example_api_2.cy.mjs");
     // transpile_js("./tmp.mjs");
   });
 
@@ -41,8 +42,8 @@ function compile_gleam() {
 
 function transpile_js(filepath: string) {
   const ast = get_ast(filepath)
-  parse_ast(ast)
-  generate_code(ast)
+  const parsed_ast = parse_ast(ast)
+  generate_code(parsed_ast)
 }
 
 function get_ast(filepath: string): Program {
@@ -64,37 +65,40 @@ function parse_ast(ast: Program): Program {
   const newBody: typeof ast.body = [];
 
   for (const node of ast.body) {
+    let replaced = false;
     console.dir(node)
     if (
-      node.type === 'FunctionDeclaration' &&
-      node.id?.name.endsWith('_foo')
+      node.type === 'ExportNamedDeclaration' &&
+      node.declaration?.type === 'FunctionDeclaration' &&
+      node.declaration?.id.name.endsWith('_test')
     ) {
-      const body = node.body.body;
+      const function_body = node.declaration?.body.body;
+      console.log("FOUND :D");
+      console.dir(function_body);
 
-      // Vérifier si ça retourne un seul `describe(...)`
-      if (
-        body.length === 1 &&
-        body[0].type === 'ReturnStatement' &&
-        body[0].argument?.type === 'CallExpression' &&
-        body[0].argument?.callee.type === 'Identifier' &&
-        body[0].argument.callee.name === 'describe'
-      ) {
-        // Remplacer la fonction par un expression statement
-        const describeCall = body[0].argument;
+      for (const statement of function_body) {
+        if (statement.type === 'ReturnStatement' && statement.argument?.type === 'CallExpression') {
+          const call_expression = statement.argument;
+          console.log("YES");
+          console.dir(call_expression);
 
-        const newNode: ExpressionStatement = {
-          type: 'ExpressionStatement',
-          expression: describeCall,
-        };
+          const newNode: ExpressionStatement = {
+            type: 'ExpressionStatement',
+            expression: call_expression,
+          };
 
-        newBody.push(newNode);
-        console.log("REPLACE\n")
-        continue; // On saute le push de la fonction
+          newBody.push(newNode);
+          console.log("REPLACED !");
+          replaced = true;
+        }
       }
     }
-    console.log("KEEP\n")
-    // Si ce n'est pas une fonction cible, on la conserve
-    newBody.push(structuredClone(node));
+
+    if (!replaced) {
+      // Si ce n'est pas une fonction cible, on la conserve
+      console.log("KEEP\n")
+      newBody.push(structuredClone(node));
+    }
   }
 
   return {
