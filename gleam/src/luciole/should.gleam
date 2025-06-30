@@ -1,8 +1,10 @@
-pub fn contain(_prev: Nil, content _content: b) -> Nil {
+import luciole/types.{type Chainable}
+
+pub fn contain(_prev: Chainable, content _content: b) -> Nil {
   Nil
 }
 
-pub fn be_visible(_prev: Nil) -> Nil {
+pub fn be_visible(_prev: Chainable) -> Nil {
   Nil
 }
 

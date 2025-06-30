@@ -1,7 +1,8 @@
-import luciole/cypress.{describe, it}
+import luciole.{describe, it}
 import luciole/cypress as cy
 import luciole/should
 
+@target(javascript)
 pub fn describe_test() {
   describe("project", [
     it("goes to Cypress example page", fn() {
@@ -9,6 +10,8 @@ pub fn describe_test() {
       should.contain(cy.get("body"), "Kitchen")
       cy.get("body") |> should.contain("Kitchen")
       cy.get("body") |> should.be_visible()
+      cy.contains("Kitchen")
+      Nil
     }),
   ])
 }

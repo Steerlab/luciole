@@ -1,19 +1,17 @@
-pub fn describe(_name: String, _suite: List(Nil)) {
-  Nil
-}
+import luciole/types.{type Chainable}
 
-pub fn it(_name: String, _body: fn() -> Nil) {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./cypress.ffi.mjs", "visit")
+pub fn visit(url: String) -> Nil
 
-pub fn visit(_url: String) {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./cypress.ffi.mjs", "get")
+pub fn get(selector: String) -> Chainable
 
-pub fn get(_selector: String) {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./cypress.ffi.mjs", "find")
+pub fn find(prev: Chainable, selector: String) -> Chainable
 
-pub fn contains(_content: String) {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./cypress.ffi.mjs", "contains")
+pub fn contains(content: String) -> Chainable
