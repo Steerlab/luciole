@@ -11,7 +11,6 @@ pub fn describe_test() {
       cy.get("body") |> should.contain("Kitchen")
       cy.get("body") |> should.be_visible()
       cy.contains("Kitchen")
-      Nil
     }),
   ])
 }

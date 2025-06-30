@@ -2,7 +2,7 @@ import luciole/types.{type Chainable}
 
 @target(javascript)
 @external(javascript, "./cypress.ffi.mjs", "visit")
-pub fn visit(url: String) -> Nil
+pub fn visit(url: String) -> Chainable
 
 @target(javascript)
 @external(javascript, "./cypress.ffi.mjs", "get")
