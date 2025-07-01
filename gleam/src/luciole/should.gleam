@@ -1,17 +1,21 @@
 import luciole/types.{type Chainable}
 
-pub fn contain(_prev: Chainable, content _content: b) -> Nil {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "contain")
+pub fn contain(prev: Chainable, content content: b) -> Chainable
 
-pub fn be_visible(_prev: Chainable) -> Nil {
-  Nil
-}
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "be_visible")
+pub fn be_visible(prev: Chainable) -> Nil
 
-pub fn method_to_cy(label: String) -> String {
-  case label {
-    "contain" -> "contain"
-    "be_visible" -> "be.visible"
-    _ -> panic as "Error: unimplemented should method"
-  }
-}
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "be_less_than")
+pub fn be_less_than(prev: Chainable, val: Float) -> Nil
+
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "be_less_than")
+pub fn be_greater_than(prev: Chainable, val: Float) -> Nil
+
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "equal")
+pub fn equal(prev: Chainable, val: Float) -> Nil
