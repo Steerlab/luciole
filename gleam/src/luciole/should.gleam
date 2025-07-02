@@ -19,3 +19,7 @@ pub fn contain(prev: Chainable, content content: a) -> Chainable
 @target(javascript)
 @external(javascript, "./should.ffi.mjs", "equal")
 pub fn equal(prev: Chainable, val: a) -> Chainable
+
+@target(javascript)
+@external(javascript, "./should.ffi.mjs", "have_value")
+pub fn have_value(prev: Chainable, val: a) -> Chainable

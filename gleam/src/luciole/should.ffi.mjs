@@ -17,3 +17,7 @@ export function contain(prev, content) {
 export function equal(prev, val) {
   return prev.should('equal', val);
 }
+
+export function have_value(prev, val) {
+  return prev.should('have.value', val);
+}
