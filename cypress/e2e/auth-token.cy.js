@@ -8,15 +8,15 @@ describe('Auth0', function () {
   // })
 
   it('shows onboarding', function () {
-    cy.visit('https://example.cypress.io');
+    cy.visit('https://example.cypress.io')
 
-    expect(2 + 1).to.equal(3);
-    // Number(2 + 1).should('equal', 3);
+    expect(2 + 1).to.equal(3)
+    // Number(2 + 1).should('equal', 3)
 
-    cy.contains('Kitchen Sink').should('be.visible');
-    // expect(cy.contains('Kitchen Sink')).to.be.visible();
+    cy.contains('Kitchen Sink').should('be.visible')
+    // expect(cy.contains('Kitchen Sink')).to.be.visible()
 
-    // cy.get('[data-cy="catchphrase"]').should('be.visible');
-    // cy.contains('Overview').should('be.visible');
+    // cy.get('[data-cy="catchphrase"]').should('be.visible')
+    // cy.contains('Overview').should('be.visible')
   })
 })

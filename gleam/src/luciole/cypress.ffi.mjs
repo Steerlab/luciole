@@ -10,7 +10,7 @@ export function get(selector) {
 }
 
 export function location() {
-  return cy.location();
+  return cy.location()
 }
 
 export function visit(url) {
