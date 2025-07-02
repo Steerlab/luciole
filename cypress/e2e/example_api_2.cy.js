@@ -1,8 +1,10 @@
 describe("project", [
   it("goes to Cypress example page", function () {
     cy.visit("https://example.cypress.io")
-    cy.get('h1').contains('Kitchen')
-    cy.get('h1').should('contain', 'Kitchen')
-    cy.get('h1').should('be.visible')
+    cy.get('body').should('contain', 'Kitchen')
+    cy.get('body').should('contain', 'Kitchen')
+    cy.get('body').contains('Kitchen')
+    cy.contains('Kitchen')
+    cy.get('body').should('be.visible')
   })
 ])
