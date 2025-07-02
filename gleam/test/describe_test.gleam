@@ -3,7 +3,6 @@ import luciole/chain
 import luciole/cypress as cy
 import luciole/should
 
-@target(javascript)
 pub fn describe_test() {
   describe("project", [
     it("goes to Cypress example page", fn() {
