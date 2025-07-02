@@ -1,9 +1,11 @@
-pub type Chainable
+import gleam/dynamic.{type Dynamic}
 
-pub type Body =
-  fn() -> Chainable
+pub type Chainable(a)
+
+pub type Body(a) =
+  fn() -> Chainable(a)
 
 pub type Test {
-  Test(name: String, body: Body)
+  Test(name: String, body: Body(Dynamic))
   Suite(name: String, suite: List(Test))
 }
