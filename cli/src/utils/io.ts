@@ -1,3 +1,6 @@
+import path from 'path'
+import fs from 'fs'
+
 const execSync = require('child_process').execSync
 
 export function compile_gleam(cwd: string): void {
@@ -15,7 +18,7 @@ export function copy_gleam_build(
   console.log('Copying build...')
   const source = `${gleamPath}build/`
   const dest = `${buildDestinationPath}build/`
-  const output = execSync(`cp -R -v -n ${source} ${dest}`, {
+  const output = execSync(`cp -R ${source} ${dest}`, {
     encoding: 'utf-8',
     cwd: './',
   })
@@ -23,11 +26,18 @@ export function copy_gleam_build(
 
 export function read_test(buildDestinationPath: string): string {
   console.log('Reading test...')
-  // TODO
-  return ''
+  const filepath = `${buildDestinationPath}build/dev/javascript/luciole/describe_test.mjs`
+  const absolutePath = path.resolve(filepath)
+  const content = fs.readFileSync(absolutePath, 'utf-8')
+  return content
 }
 
-export function write_test(test_code: string, test_path: string): void {
+export function write_test(content: string, dirpath: string): void {
   console.log('Writing test...')
-  // TODO
+  const absolutePath = path.resolve(`${dirpath}describe_test.cy.js`)
+  const dir = path.dirname(absolutePath)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+  fs.writeFileSync(absolutePath, content, 'utf-8')
 }

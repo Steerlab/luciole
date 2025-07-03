@@ -35,6 +35,7 @@ JavaScript CLI:
 cd cli
 yarn tsc # Compile the project
 node dist/index.js [command] # Run the project
+node dist/index.js transpile "../gleam/" "../cypress/" "../cypress/e2e/generated_4/" # Run the project in my folder tree
 ```
 
 Cypress:
