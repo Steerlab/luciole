@@ -1,7 +1,7 @@
-import { toList } from './gleam.mjs';
-import * as $chain from './luciole/chain.mjs';
-import * as $cy from './luciole/cypress.mjs';
-import * as $should from './luciole/should.mjs';
+import { toList } from '../../build/dev/javascript/luciole/gleam.mjs';
+import * as $chain from '../../build/dev/javascript/luciole/luciole/chain.mjs';
+import * as $cy from '../../build/dev/javascript/luciole/luciole/cypress.mjs';
+import * as $should from '../../build/dev/javascript/luciole/luciole/should.mjs';
 describe('project', toList([it('goes to Cypress example page', () => {
         $cy.visit('https://example.cypress.io');
         $should.contain($cy.get('body'), 'Kitchen');
