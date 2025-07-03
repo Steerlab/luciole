@@ -2,6 +2,7 @@
 *.ez
 /build
 /gleam/build
+/cypress/build
 erl_crash.dump
 ignore
 node_modules
