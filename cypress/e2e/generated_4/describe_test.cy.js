@@ -1,9 +1,4 @@
 import { toList } from './gleam.mjs';
-import * as $luciole from './luciole.mjs';
-import {
-    describe,
-    it
-} from './luciole.mjs';
 import * as $chain from './luciole/chain.mjs';
 import * as $cy from './luciole/cypress.mjs';
 import * as $should from './luciole/should.mjs';

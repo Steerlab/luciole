@@ -6,6 +6,7 @@ export function transpile(code: string): string {
   console.log('Transpiling...')
   let ast: Program = get_ast(code)
   ast = move_describe_at_root(ast)
+  ast = remove_describe_it_imports(ast)
   return generate_code(ast)
 }
 
@@ -30,15 +31,12 @@ function move_describe_at_root(ast: Program): Program {
 
   for (const node of ast.body) {
     let replaced = false
-    console.dir(node)
     if (
       node.type === 'ExportNamedDeclaration' &&
       node.declaration?.type === 'FunctionDeclaration' &&
       node.declaration?.id.name.endsWith('_test')
     ) {
       const function_body = node.declaration?.body.body
-      console.log('FOUND :D')
-      console.dir(function_body)
 
       for (const statement of function_body) {
         if (
@@ -46,8 +44,6 @@ function move_describe_at_root(ast: Program): Program {
           statement.argument?.type === 'CallExpression'
         ) {
           const call_expression = statement.argument
-          console.log('YES')
-          console.dir(call_expression)
 
           const newNode: ExpressionStatement = {
             type: 'ExpressionStatement',
@@ -55,18 +51,34 @@ function move_describe_at_root(ast: Program): Program {
           }
 
           newBody.push(newNode)
-          console.log('REPLACED !')
           replaced = true
         }
       }
     }
 
     if (!replaced) {
-      console.log('KEEP\n')
       newBody.push(structuredClone(node))
     }
   }
 
+  return {
+    type: 'Program',
+    body: newBody,
+    sourceType: ast.sourceType,
+  }
+}
+
+function remove_describe_it_imports(ast: Program): Program {
+  const newBody: typeof ast.body = []
+  for (const node of ast.body) {
+    if (
+      node.type === 'ImportDeclaration' &&
+      node.source.value === './luciole.mjs'
+    ) {
+      continue
+    }
+    newBody.push(structuredClone(node))
+  }
   return {
     type: 'Program',
     body: newBody,
