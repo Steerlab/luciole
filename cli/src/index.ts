@@ -4,50 +4,49 @@ import * as espree from 'espree'
 import { ExpressionStatement, Program } from 'estree'
 import * as escodegen from 'escodegen'
 import * as path from 'path'
+import {
+  compile_gleam,
+  copy_gleam_build,
+  read_test,
+  write_test,
+} from './utils/io'
+import { transpile } from './utils/transpile'
+
+interface CLIArgs {
+  gleamPath: string
+  buildDestinationPath: string
+  testPath: string
+}
 
 const program = new Command()
-const execSync = require('child_process').execSync
-
-program
-  .name('my-cli')
-  .description('CLI for compiling Gleam tests to Cypress tests. ')
-  .version('1.0.0')
-
-program
-  .command('hello')
-  .description('Prints Hello World. ')
-  .action(() => {
-    console.log('Hello, world!')
-  })
-
-program
-  .command('gleam-build')
-  .description('Compiles Gleam files to JavaScript. ')
-  .action(() => {
-    compile_gleam()
-  })
 
 program
   .command('transpile')
   .description(
     'Creates an AST from a JavaScript file, parse it and generate the resulting code. ',
   )
-  .action(() => {
-    transpile_js('../gleam/build/dev/javascript/luciole/describe_test.mjs')
-    // transpile_js("../ignore/example_api_2.cy.mjs");
-    // transpile_js("./tmp.mjs");
+  .argument('<gleam-path>', 'test')
+  .argument('<build-destination-path>', 'test')
+  .argument('<test-path>', 'test')
+  .action((gleamPath, buildDestinationPath, testPath) => {
+    const args: CLIArgs = { gleamPath, buildDestinationPath, testPath }
+    main(args)
   })
 
-function compile_gleam() {
-  const output = execSync('gleam build --target=js', {
-    encoding: 'utf-8',
-    cwd: './../gleam/',
-  })
+program.parse(process.argv)
+
+function main(args: CLIArgs) {
+  compile_gleam(args.gleamPath)
+  copy_gleam_build(args.gleamPath, args.buildDestinationPath)
+  let test_code: string = read_test(args.buildDestinationPath)
+  test_code = transpile(test_code)
+  write_test(test_code, args.testPath)
+  console.log('Done.')
 }
 
 function transpile_js(filepath: string) {
   const ast = get_ast(filepath)
-  const parsed_ast = parse_ast(ast)
+  const parsed_ast = ast_move_describe_at_root(ast)
   generate_code(parsed_ast)
 }
 
@@ -66,7 +65,7 @@ function get_ast(filepath: string): Program {
   return ast
 }
 
-function parse_ast(ast: Program): Program {
+function ast_move_describe_at_root(ast: Program): Program {
   const newBody: typeof ast.body = []
 
   for (const node of ast.body) {
@@ -121,5 +120,3 @@ function generate_code(ast: Program) {
   const cypress_code = escodegen.generate(ast)
   console.log(cypress_code)
 }
-
-program.parse(process.argv)
