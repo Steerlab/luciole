@@ -5,7 +5,7 @@ const execSync = require('child_process').execSync
 
 export function compile_gleam(cwd: string): void {
   console.log('Compiling Gleam...')
-  const output = execSync('gleam build --target=js', {
+  execSync('gleam build --target=js', {
     encoding: 'utf-8',
     cwd: cwd,
   })
@@ -18,7 +18,7 @@ export function copy_gleam_build(
   console.log('Copying build...')
   const source = `${gleamPath}build/`
   const dest = `${buildDestinationPath}build/`
-  const output = execSync(`cp -R ${source} ${dest}`, {
+  execSync(`cp -R ${source} ${dest}`, {
     encoding: 'utf-8',
     cwd: './',
   })
