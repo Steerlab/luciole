@@ -26,13 +26,9 @@ function main(
 ) {
   io.compile_gleam(gleamPath)
   io.copy_gleam_build(gleamPath, buildDestinationPath)
-  const testCode: string = io.read_test(buildDestinationPath)
-  const testCodeTranspiled = transpile.transpile(
-    testCode,
-    buildDestinationPath,
-    testPath,
-  )
-  console.log(testCodeTranspiled)
-  io.write_test(testCodeTranspiled, testPath)
+  let testCode: string = io.read_test(buildDestinationPath)
+  testCode = transpile.transpile(testCode, buildDestinationPath, testPath)
+  io.write_test(testCode, testPath)
+  io.format_test(testPath)
   console.log('Done.')
 }

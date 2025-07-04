@@ -41,3 +41,12 @@ export function write_test(content: string, dirpath: string): void {
   }
   fs.writeFileSync(absolutePath, content, 'utf-8')
 }
+
+export function format_test(filepath: string): void {
+  const absolutePath = path.resolve(filepath)
+  const cmd = `yarn prettier ${absolutePath}/describe_test.cy.js --write --ignore-path ''`
+  execSync(cmd, {
+    encoding: 'utf-8',
+    cwd: './',
+  })
+}
