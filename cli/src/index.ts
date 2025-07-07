@@ -1,5 +1,5 @@
-import path from 'path'
 import * as io from './utils/io'
+import { show_ast } from './utils/show_ast'
 import * as transpile from './utils/transpile'
 import { Command } from 'commander'
 
@@ -8,13 +8,21 @@ const program = new Command()
 program
   .command('transpile')
   .description(
-    'Creates an AST from a JavaScript file, parse it and generate the resulting code. ',
+    'Creates an AST from a JavaScript file, parse it and generate the resulting code.',
   )
-  .argument('<gleam-path>', 'test')
-  .argument('<build-destination-path>', 'test')
-  .argument('<test-path>', 'test')
+  .argument('<gleam-path>', 'Path to gleam project.')
+  .argument('<build-destination-path>', 'Destination path for build files.')
+  .argument('<test-path>', 'Destination path to Cypress test file.')
   .action((gleamPath, buildDestinationPath, testPath) => {
     main(gleamPath, buildDestinationPath, testPath)
+  })
+
+program
+  .command('show_ast')
+  .description('Show AST (Abstract Syntaxic Tree) components.')
+  .argument('<ts-path>', 'Path to TypeScript file.')
+  .action((tsPath) => {
+    show_ast(tsPath)
   })
 
 program.parse(process.argv)
