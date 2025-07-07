@@ -1,6 +1,6 @@
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
-import { ExpressionStatement, Program } from 'estree'
+import { ArrayExpression, ExpressionStatement, Program } from 'estree'
 import path from 'path'
 
 export function transpile(
@@ -13,6 +13,7 @@ export function transpile(
   ast = move_describe_at_root(ast)
   ast = remove_describe_it_imports(ast)
   ast = edit_imports_path(ast, buildDestinationPath, testPath)
+  ast = remove_to_list(ast)
   return generate_code(ast)
 }
 
@@ -112,6 +113,37 @@ function edit_imports_path(
       newNode.source.raw = `"${import_path}"`
       newBody.push(newNode)
       continue
+    }
+    newBody.push(structuredClone(node))
+  }
+
+  return {
+    type: 'Program',
+    body: newBody,
+    sourceType: ast.sourceType,
+  }
+}
+
+function remove_to_list(ast: Program): Program {
+  const newBody: typeof ast.body = []
+
+  for (const node of ast.body) {
+    if (
+      node.type === 'ExpressionStatement' &&
+      node.expression.type === 'CallExpression' &&
+      node.expression.callee.type === 'Identifier' &&
+      node.expression.callee.name === 'describe'
+    ) {
+      const args = node.expression.arguments
+      if (args[1].type === 'CallExpression') {
+        const list = structuredClone(args[1].arguments[0]) as ArrayExpression
+        const newNode = structuredClone(node) as ExpressionStatement
+        if (newNode.expression.type === 'CallExpression') {
+          newNode.expression.arguments[1] = list
+        }
+        newBody.push(newNode)
+        continue
+      }
     }
     newBody.push(structuredClone(node))
   }
