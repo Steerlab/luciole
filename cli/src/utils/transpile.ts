@@ -1,6 +1,11 @@
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
-import { ArrayExpression, ExpressionStatement, Program } from 'estree'
+import {
+  ArrayExpression,
+  CallExpression,
+  ExpressionStatement,
+  Program,
+} from 'estree'
 import path from 'path'
 
 export function transpile(
@@ -14,6 +19,7 @@ export function transpile(
   ast = remove_describe_it_imports(ast)
   ast = edit_imports_path(ast, buildDestinationPath, testPath)
   ast = remove_to_list(ast)
+  ast = convert_arrow_fun_to_anonymous_fun(ast)
   return generate_code(ast)
 }
 
@@ -31,6 +37,27 @@ function get_ast(code: string): Program {
 function generate_code(ast: Program): string {
   const code = escodegen.generate(ast)
   return code
+}
+
+function is_it_expression(expr: any): expr is CallExpression {
+  return (
+    expr != null &&
+    expr.type === 'CallExpression' &&
+    expr.callee.type === 'Identifier' &&
+    expr.callee.name === 'it'
+  )
+}
+
+function is_describe_expression(expr: any): expr is CallExpression {
+  return (
+    expr.type === 'CallExpression' &&
+    expr.callee.type === 'Identifier' &&
+    expr.callee.name === 'describe'
+  )
+}
+
+function clone<A>(a: A): A {
+  return structuredClone(a)
 }
 
 function move_describe_at_root(ast: Program): Program {
@@ -143,6 +170,42 @@ function remove_to_list(ast: Program): Program {
         }
         newBody.push(newNode)
         continue
+      }
+    }
+    newBody.push(structuredClone(node))
+  }
+
+  return {
+    type: 'Program',
+    body: newBody,
+    sourceType: ast.sourceType,
+  }
+}
+
+function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
+  const newBody: typeof ast.body = []
+
+  outerLoop: for (const node of ast.body) {
+    const newNode = clone(node)
+    if (
+      node.type === 'ExpressionStatement' &&
+      newNode.type === 'ExpressionStatement' &&
+      is_describe_expression(node.expression) &&
+      is_describe_expression(newNode.expression)
+    ) {
+      const args = node.expression.arguments
+      const newArgs = newNode.expression.arguments
+      if (
+        args[1].type === 'ArrayExpression' &&
+        newArgs[1].type === 'ArrayExpression'
+      ) {
+        for (const newCall of newArgs[1].elements) {
+          if (is_it_expression(newCall)) {
+            newCall.arguments[1].type = 'FunctionExpression'
+            newBody.push(newNode)
+            continue outerLoop
+          }
+        }
       }
     }
     newBody.push(structuredClone(node))

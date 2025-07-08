@@ -3,7 +3,7 @@ import * as $chain from '../../build/dev/javascript/luciole/luciole/chain.mjs'
 import * as $cy from '../../build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from '../../build/dev/javascript/luciole/luciole/should.mjs'
 describe('project', [
-  it('goes to Cypress example page', () => {
+  it('goes to Cypress example page', function () {
     $cy.visit('https://example.cypress.io')
     $should.contain($cy.get('body'), 'Kitchen')
     let _pipe = $cy.get('body')
