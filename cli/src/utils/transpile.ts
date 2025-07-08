@@ -35,8 +35,7 @@ function get_ast(code: string): Program {
 }
 
 function generate_code(ast: Program): string {
-  const code = escodegen.generate(ast)
-  return code
+  return escodegen.generate(ast)
 }
 
 function is_it_expression(expr: any): expr is CallExpression {
@@ -50,6 +49,7 @@ function is_it_expression(expr: any): expr is CallExpression {
 
 function is_describe_expression(expr: any): expr is CallExpression {
   return (
+    expr != null &&
     expr.type === 'CallExpression' &&
     expr.callee.type === 'Identifier' &&
     expr.callee.name === 'describe'
@@ -63,8 +63,7 @@ function clone<A>(a: A): A {
 function move_describe_at_root(ast: Program): Program {
   const newBody: typeof ast.body = []
 
-  for (const node of ast.body) {
-    let replaced = false
+  outerLoop: for (const node of ast.body) {
     if (
       node.type === 'ExportNamedDeclaration' &&
       node.declaration?.type === 'FunctionDeclaration' &&
@@ -84,16 +83,12 @@ function move_describe_at_root(ast: Program): Program {
           }
 
           newBody.push(newNode)
-          replaced = true
+          continue outerLoop
         }
       }
     }
-
-    if (!replaced) {
-      newBody.push(structuredClone(node))
-    }
+    newBody.push(clone(node))
   }
-
   return {
     type: 'Program',
     body: newBody,
@@ -110,7 +105,7 @@ function remove_describe_it_imports(ast: Program): Program {
     ) {
       continue
     }
-    newBody.push(structuredClone(node))
+    newBody.push(clone(node))
   }
   return {
     type: 'Program',
@@ -126,7 +121,6 @@ function edit_imports_path(
 ): Program {
   const import_relative_path = `${path.relative(testPath, buildDestinationPath)}/build/dev/javascript/luciole/`
   const newBody: typeof ast.body = []
-
   for (const node of ast.body) {
     if (node.type === 'ImportDeclaration') {
       let import_path: string = String(node.source.value) ?? ''
@@ -135,15 +129,14 @@ function edit_imports_path(
       } else if (import_path.charAt(0) !== '/') {
         import_path = import_relative_path + import_path
       }
-      const newNode = structuredClone(node)
+      const newNode = clone(node)
       newNode.source.value = import_path
       newNode.source.raw = `"${import_path}"`
       newBody.push(newNode)
       continue
     }
-    newBody.push(structuredClone(node))
+    newBody.push(clone(node))
   }
-
   return {
     type: 'Program',
     body: newBody,
@@ -153,28 +146,24 @@ function edit_imports_path(
 
 function remove_to_list(ast: Program): Program {
   const newBody: typeof ast.body = []
-
   for (const node of ast.body) {
+    const newNode = clone(node)
     if (
       node.type === 'ExpressionStatement' &&
-      node.expression.type === 'CallExpression' &&
-      node.expression.callee.type === 'Identifier' &&
-      node.expression.callee.name === 'describe'
+      newNode.type === 'ExpressionStatement' &&
+      is_describe_expression(node.expression) &&
+      is_describe_expression(newNode.expression)
     ) {
       const args = node.expression.arguments
       if (args[1].type === 'CallExpression') {
-        const list = structuredClone(args[1].arguments[0]) as ArrayExpression
-        const newNode = structuredClone(node) as ExpressionStatement
-        if (newNode.expression.type === 'CallExpression') {
-          newNode.expression.arguments[1] = list
-        }
+        const list = clone(args[1].arguments[0])
+        newNode.expression.arguments[1] = list
         newBody.push(newNode)
         continue
       }
     }
-    newBody.push(structuredClone(node))
+    newBody.push(clone(node))
   }
-
   return {
     type: 'Program',
     body: newBody,
@@ -184,7 +173,6 @@ function remove_to_list(ast: Program): Program {
 
 function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
   const newBody: typeof ast.body = []
-
   outerLoop: for (const node of ast.body) {
     const newNode = clone(node)
     if (
@@ -208,9 +196,8 @@ function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
         }
       }
     }
-    newBody.push(structuredClone(node))
+    newBody.push(clone(node))
   }
-
   return {
     type: 'Program',
     body: newBody,
