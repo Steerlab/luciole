@@ -12,6 +12,6 @@ describe('project', [
     $chain.contains(_pipe$1, 'Kitchen')
     $cy.contains('Kitchen')
     let _pipe$2 = $cy.get('body')
-    return $should.be_visible(_pipe$2)
+    $should.be_visible(_pipe$2)
   }),
 ])
