@@ -20,6 +20,7 @@ export function transpile(
   ast = edit_imports_path(ast, buildDestinationPath, testPath)
   ast = remove_to_list(ast)
   ast = convert_arrow_fun_to_anonymous_fun(ast)
+  ast = remove_returns(ast)
   return generate_code(ast)
 }
 
@@ -190,6 +191,53 @@ function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
         for (const newCall of newArgs[1].elements) {
           if (is_it_expression(newCall)) {
             newCall.arguments[1].type = 'FunctionExpression'
+            newBody.push(newNode)
+            continue outerLoop
+          }
+        }
+      }
+    }
+    newBody.push(clone(node))
+  }
+  return {
+    type: 'Program',
+    body: newBody,
+    sourceType: ast.sourceType,
+  }
+}
+
+function remove_returns(ast: Program): Program {
+  const newBody: typeof ast.body = []
+  outerLoop: for (const node of ast.body) {
+    const newNode = clone(node)
+    if (
+      node.type === 'ExpressionStatement' &&
+      newNode.type === 'ExpressionStatement' &&
+      is_describe_expression(node.expression) &&
+      is_describe_expression(newNode.expression)
+    ) {
+      const args = node.expression.arguments
+      const newArgs = newNode.expression.arguments
+      if (
+        args[1].type === 'ArrayExpression' &&
+        newArgs[1].type === 'ArrayExpression'
+      ) {
+        for (const newCall of newArgs[1].elements) {
+          if (
+            is_it_expression(newCall) &&
+            newCall.arguments[1].type === 'FunctionExpression'
+          ) {
+            const newItBody = newCall.arguments[1].body
+            for (let i = 0; i < newItBody.body.length; i++) {
+              const newItExpr = newItBody.body[i]
+              if (newItExpr.type === 'ReturnStatement') {
+                const newNotReturn = {
+                  type: 'ExpressionStatement',
+                  expression: newItExpr.argument,
+                } as ExpressionStatement
+                newItBody.body[i] = newNotReturn
+              }
+            }
             newBody.push(newNode)
             continue outerLoop
           }
