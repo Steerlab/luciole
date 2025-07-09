@@ -1,20 +1,33 @@
 # Luciole
 
-The CLI for compiling Gleam tests to Cypress tests.
-And a Cypress API in Gleam.
+An API for writting Cypress tests in Gleam and a CLI for compiling those tests in JavaScript.
 
 <!-- [![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/) -->
 
-```sh
-gleam add luciole@1
-```
+## Installation
+
+TODO
+
+## Usage
 
 ```gleam
-import luciole
+import luciole.{describe, it}
+import luciole/chain
+import luciole/cypress as cy
+import luciole/should
 
-pub fn main() {
-  // TODO: An example of the project in use
+pub fn describe_test() {
+  describe("project", [
+    it("goes to Cypress example page", fn() {
+      cy.visit("https://example.cypress.io")
+      should.contain(cy.get("body"), "Kitchen")
+      cy.get("body") |> should.contain("Kitchen")
+      cy.get("body") |> chain.contains("Kitchen")
+      cy.contains("Kitchen")
+      cy.get("body") |> should.be_visible()
+    }),
+  ])
 }
 ```
 
@@ -42,3 +55,19 @@ Cypress:
 ```sh
 yarn cypress open # Open Cypress
 ```
+
+## About the API
+
+You have to write tests in a Gleam file with a name ending in "_test.gleam". Each test file should contain only one test at top-level and can contain any number of nested `describe` and `it`. A `describe` can contain other `describe` or `it`, and an `it` can only contain the test body.
+
+Those formats are correct: ✅
+- `it(body)`: one `it` at top-level
+- `describe( [it(body)] )`: an `it` in a `describe`
+- `describe( [it(body), ..., it(body)] )`: multiple `it` in a `describe`
+- `describe( [describe( [... describe( [it(body)] )... ] )] )`: multiple `describe` nested
+- `describe( [it(body), describe( [it(body)] )] )`: switching between `describe` and `it` in a `describe`
+
+Those formats are not correct: ❌
+- `describe( [body] )` : a test body outside of `it`
+- `it( [it(body)] )` : multiple `it` nested
+- `it( [describe(...)] )`: an `it` containing a `describe`
