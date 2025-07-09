@@ -1,17 +1,14 @@
-import path from 'path'
-import fs from 'fs'
+import * as path from 'node:path'
+import * as fs from 'node:fs'
+import { execSync } from 'node:child_process'
+// import * as prettier from 'prettier'
 
-const execSync = require('child_process').execSync
-
-export function compile_gleam(cwd: string): void {
+export function compileGleam(cwd: string): void {
   console.log('Compiling Gleam...')
-  execSync('gleam build --target=js', {
-    encoding: 'utf-8',
-    cwd: cwd,
-  })
+  execSync('gleam build --target=js', { encoding: 'utf-8', cwd })
 }
 
-export function copy_gleam_build(
+export function copyGleamBuild(
   gleamPath: string,
   buildDestinationPath: string,
 ): void {
@@ -24,26 +21,24 @@ export function copy_gleam_build(
   })
 }
 
-export function read_test(buildDestinationPath: string): string {
+export async function readTest(buildDestinationPath: string): Promise<string> {
   console.log('Reading test...')
   const filepath = `${buildDestinationPath}build/dev/javascript/luciole/describe_test.mjs`
   const absolutePath = path.resolve(filepath)
-  const content = fs.readFileSync(absolutePath, 'utf-8')
-  return content
+  return await fs.promises.readFile(absolutePath, 'utf-8')
 }
 
-export function write_test(content: string, dirpath: string): void {
+export async function writeTest(content: string, dirpath: string) {
   console.log('Writing test...')
   const absolutePath = path.resolve(`${dirpath}describe_test.cy.js`)
   const dir = path.dirname(absolutePath)
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true })
-  }
-  fs.writeFileSync(absolutePath, content, 'utf-8')
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+  await fs.promises.writeFile(absolutePath, content, 'utf-8')
 }
 
-export function format_test(filepath: string): void {
+export function formatTest(filepath: string): void {
   const absolutePath = path.resolve(filepath)
+  // prettier.format(`${absolutePath}/describe_test.cy.js`)
   const cmd = `yarn prettier ${absolutePath}/describe_test.cy.js --write --ignore-path ''`
   execSync(cmd, {
     encoding: 'utf-8',

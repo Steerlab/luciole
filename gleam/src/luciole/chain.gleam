@@ -1,4 +1,4 @@
-import luciole/types.{type Body, type Chainable}
+import luciole.{type Body, type Chainable}
 
 @external(javascript, "./chain.ffi.mjs", "attach_file")
 pub fn attach_file(prev: Chainable(a), filepath: String) -> Chainable(a)

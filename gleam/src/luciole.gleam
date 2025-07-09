@@ -1,10 +1,20 @@
-import luciole/types.{type Body, type Test}
+import gleam/dynamic.{type Dynamic}
 import unsafe/unsafe
 
+pub type Chainable(a)
+
+pub type Body(a) =
+  fn() -> Chainable(a)
+
+pub type Test {
+  Test(name: String, body: Body(Dynamic))
+  Suite(name: String, suite: List(Test))
+}
+
 pub fn describe(name: String, suite: List(Test)) -> Test {
-  types.Suite(name, suite)
+  Suite(name, suite)
 }
 
 pub fn it(name: String, body: Body(a)) -> Test {
-  types.Test(name, unsafe.coerce(body))
+  Test(name, unsafe.coerce(body))
 }

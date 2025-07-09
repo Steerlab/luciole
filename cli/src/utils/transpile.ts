@@ -1,6 +1,6 @@
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
-import {
+import type {
   ArrayExpression,
   CallExpression,
   ExpressionStatement,
@@ -57,10 +57,6 @@ function is_describe_expression(expr: any): expr is CallExpression {
   )
 }
 
-function clone<A>(a: A): A {
-  return structuredClone(a)
-}
-
 function move_describe_at_root(ast: Program): Program {
   const newBody: typeof ast.body = []
 
@@ -88,7 +84,7 @@ function move_describe_at_root(ast: Program): Program {
         }
       }
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',
@@ -106,7 +102,7 @@ function remove_describe_it_imports(ast: Program): Program {
     ) {
       continue
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',
@@ -130,13 +126,13 @@ function edit_imports_path(
       } else if (import_path.charAt(0) !== '/') {
         import_path = import_relative_path + import_path
       }
-      const newNode = clone(node)
+      const newNode = structuredClone(node)
       newNode.source.value = import_path
       newNode.source.raw = `"${import_path}"`
       newBody.push(newNode)
       continue
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',
@@ -147,23 +143,21 @@ function edit_imports_path(
 
 function remove_to_list(ast: Program): Program {
   const newBody: typeof ast.body = []
-  for (const node of ast.body) {
-    const newNode = clone(node)
+  for (const original of ast.body) {
+    const node = structuredClone(original)
     if (
       node.type === 'ExpressionStatement' &&
-      newNode.type === 'ExpressionStatement' &&
-      is_describe_expression(node.expression) &&
-      is_describe_expression(newNode.expression)
+      is_describe_expression(node.expression)
     ) {
       const args = node.expression.arguments
       if (args[1].type === 'CallExpression') {
-        const list = clone(args[1].arguments[0])
-        newNode.expression.arguments[1] = list
-        newBody.push(newNode)
+        const list = structuredClone(args[1].arguments[0])
+        node.expression.arguments[1] = list
+        newBody.push(node)
         continue
       }
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',
@@ -175,7 +169,7 @@ function remove_to_list(ast: Program): Program {
 function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
   const newBody: typeof ast.body = []
   outerLoop: for (const node of ast.body) {
-    const newNode = clone(node)
+    const newNode = structuredClone(node)
     if (
       node.type === 'ExpressionStatement' &&
       newNode.type === 'ExpressionStatement' &&
@@ -197,7 +191,7 @@ function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
         }
       }
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',
@@ -209,7 +203,7 @@ function convert_arrow_fun_to_anonymous_fun(ast: Program): Program {
 function remove_returns(ast: Program): Program {
   const newBody: typeof ast.body = []
   outerLoop: for (const node of ast.body) {
-    const newNode = clone(node)
+    const newNode = structuredClone(node)
     if (
       node.type === 'ExpressionStatement' &&
       newNode.type === 'ExpressionStatement' &&
@@ -230,11 +224,11 @@ function remove_returns(ast: Program): Program {
             const newItBody = newCall.arguments[1].body
             for (let i = 0; i < newItBody.body.length; i++) {
               const newItExpr = newItBody.body[i]
-              if (newItExpr.type === 'ReturnStatement') {
-                const newNotReturn = {
+              if (newItExpr.type === 'ReturnStatement' && newItExpr.argument) {
+                const newNotReturn: ExpressionStatement = {
                   type: 'ExpressionStatement',
                   expression: newItExpr.argument,
-                } as ExpressionStatement
+                }
                 newItBody.body[i] = newNotReturn
               }
             }
@@ -244,7 +238,7 @@ function remove_returns(ast: Program): Program {
         }
       }
     }
-    newBody.push(clone(node))
+    newBody.push(structuredClone(node))
   }
   return {
     type: 'Program',

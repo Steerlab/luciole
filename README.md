@@ -35,20 +35,18 @@ pub fn describe_test() {
 
 ## Development
 
-Cypress API in Gleam:
+<!-- Cypress API in Gleam:
 ```sh
 cd gleam
 gleam run # Run the project
 gleam test # Run the tests
 gleam build --target=js # Compile the project and tests to JavaScript
-```
+``` -->
 
 JavaScript CLI:
 ```sh
-cd cli
-yarn tsc # Compile the project
-node dist/index.js [command] # Run the project
-node dist/index.js transpile "../gleam/" "../cypress/" "../cypress/e2e/generated_4/" # Run the project in my folder tree
+yarn luciole [command] # Run the project
+yarn luciole transpile "gleam/" "cypress/" "cypress/e2e/generated_4/" # Run the project in my folder tree
 ```
 
 Cypress:

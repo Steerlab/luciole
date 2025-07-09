@@ -1,4 +1,4 @@
-import luciole/types.{type Chainable}
+import luciole.{type Chainable}
 
 @external(javascript, "./cypress.ffi.mjs", "contains")
 pub fn contains(content: String) -> Chainable(a)

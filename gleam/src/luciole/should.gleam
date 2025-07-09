@@ -1,4 +1,4 @@
-import luciole/types.{type Chainable}
+import luciole.{type Chainable}
 
 @external(javascript, "./should.ffi.mjs", "be_less_than")
 pub fn be_greater_than(prev: Chainable(a), val: a) -> Chainable(a)

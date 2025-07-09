@@ -1,6 +1,6 @@
-import * as io from './utils/io'
-import { show_ast } from './utils/show_ast'
-import * as transpile from './utils/transpile'
+import * as io from './utils/io.ts'
+import { showAST } from './utils/show_ast.ts'
+import * as transpile from './utils/transpile.ts'
 import { Command } from 'commander'
 
 const program = new Command()
@@ -22,21 +22,21 @@ program
   .description('Show AST (Abstract Syntaxic Tree) components.')
   .argument('<ts-path>', 'Path to TypeScript file.')
   .action((tsPath) => {
-    show_ast(tsPath)
+    showAST(tsPath)
   })
 
 program.parse(process.argv)
 
-function main(
+async function main(
   gleamPath: string,
   buildDestinationPath: string,
   testPath: string,
 ) {
-  io.compile_gleam(gleamPath)
-  io.copy_gleam_build(gleamPath, buildDestinationPath)
-  let testCode: string = io.read_test(buildDestinationPath)
+  io.compileGleam(gleamPath)
+  io.copyGleamBuild(gleamPath, buildDestinationPath)
+  let testCode: string = await io.readTest(buildDestinationPath)
   testCode = transpile.transpile(testCode, buildDestinationPath, testPath)
-  io.write_test(testCode, testPath)
-  io.format_test(testPath)
+  await io.writeTest(testCode, testPath)
+  io.formatTest(testPath)
   console.log('Done.')
 }
