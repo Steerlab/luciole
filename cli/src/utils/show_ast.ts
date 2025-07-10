@@ -1,41 +1,27 @@
-import fs from 'fs'
+import * as fs from 'fs'
+import * as path from 'path'
 import * as espree from 'espree'
-import type { Program } from 'acorn'
-import path from 'path'
+import * as estraverse from 'estraverse'
+import type { Program } from 'estree'
 
 export function showAST(filepath: string) {
-  console.log('TEST')
   const absolutePath = path.resolve(filepath)
   const code = fs.readFileSync(absolutePath, 'utf-8')
-  const ast: Program = espree.parse(code, {
+  const ast = espree.parse(code, {
     ecmaVersion: 'latest',
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
+  }) as Program
+  let depth = 0
+  estraverse.traverse(ast, {
+    enter(node) {
+      console.log('| '.repeat(depth) + `${node.type} (${depth})`)
+      depth++
+    },
+    leave() {
+      depth--
+    },
   })
-  console.log('AST:')
-  console.dir(ast)
-  for (const node of ast.body) {
-    if (
-      node.type === 'ExpressionStatement' &&
-      node.expression.type === 'CallExpression' &&
-      node.expression.callee.type === 'Identifier' &&
-      node.expression.callee.name === 'describe'
-    ) {
-      console.log('\nExpressionStatements:')
-      console.dir(node.expression)
-      const args = node.expression.arguments
-      console.dir(args)
-      if (args[1].type === 'ArrayExpression') {
-        console.dir(args[1])
-        for (const call of args[1].elements) {
-          if (call != null && call.type === 'CallExpression') {
-            console.dir(call.callee)
-            console.dir(call.arguments)
-          }
-        }
-      }
-    }
-  }
 }
