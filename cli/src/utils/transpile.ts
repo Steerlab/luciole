@@ -15,8 +15,7 @@ export function transpile(
   edit(ast, moveDescribeToTopLevel)
   edit(ast, removeLucioleImport)
   edit(ast, (node) => editImportsPaths(node, buildDestinationPath, testPath))
-  // ast = editImportsPath(ast, buildDestinationPath, testPath)
-  ast = removeToList(ast)
+  edit(ast, removeToList)
   ast = convertArrowFunToAnonymousFun(ast)
   ast = removeReturns(ast)
   return generateCode(ast)
@@ -137,28 +136,25 @@ function editImportsPaths(
   }
 }
 
-function removeToList(ast: Program): Program {
-  const newBody: typeof ast.body = []
-  for (const original of ast.body) {
-    const node = structuredClone(original)
+/**
+ * Turn `describe(toList([...]))` into `describe([...)])`
+ */
+function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'ExpressionStatement' &&
+    isDescribeExpression(node.expression)
+  ) {
+    const args = node.expression.arguments
     if (
-      node.type === 'ExpressionStatement' &&
-      isDescribeExpression(node.expression)
+      args[1] !== undefined &&
+      args[1].type === 'CallExpression' &&
+      args[1].callee.type === 'Identifier' &&
+      args[1].callee.name === 'toList'
     ) {
-      const args = node.expression.arguments
-      if (args[1].type === 'CallExpression') {
-        const list = structuredClone(args[1].arguments[0])
-        node.expression.arguments[1] = list
-        newBody.push(node)
-        continue
-      }
+      const list = args[1].arguments[0] ?? []
+      node.expression.arguments[1] = list
+      return node
     }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
   }
 }
 
