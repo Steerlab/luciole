@@ -24,7 +24,7 @@ export function transpile(
   edit(ast, (node) => editImportsPaths(node, buildDestinationPath, testPath))
   edit(ast, removeToList)
   edit(ast, convertArrowFunToAnonymousFun)
-  ast = removeReturns(ast)
+  edit(ast, removeReturns)
   return generateCode(ast)
 }
 
@@ -188,49 +188,24 @@ function convertArrowFunToAnonymousFun(
   }
 }
 
-function removeReturns(ast: Program): Program {
-  const newBody: typeof ast.body = []
-  outerLoop: for (const node of ast.body) {
-    const newNode = structuredClone(node)
-    if (
-      node.type === 'ExpressionStatement' &&
-      newNode.type === 'ExpressionStatement' &&
-      isDescribeExpression(node.expression) &&
-      isDescribeExpression(newNode.expression)
-    ) {
-      const args = node.expression.arguments
-      const newArgs = newNode.expression.arguments
-      if (
-        args[1].type === 'ArrayExpression' &&
-        newArgs[1].type === 'ArrayExpression'
-      ) {
-        for (const newCall of newArgs[1].elements) {
-          if (
-            isItExpression(newCall) &&
-            newCall.arguments[1].type === 'FunctionExpression'
-          ) {
-            const newItBody = newCall.arguments[1].body
-            for (let i = 0; i < newItBody.body.length; i++) {
-              const newItExpr = newItBody.body[i]
-              if (newItExpr.type === 'ReturnStatement' && newItExpr.argument) {
-                const newNotReturn: ExpressionStatement = {
-                  type: 'ExpressionStatement',
-                  expression: newItExpr.argument,
-                }
-                newItBody.body[i] = newNotReturn
-              }
-            }
-            newBody.push(newNode)
-            continue outerLoop
-          }
+/**
+ * Convert return expressions to simple expressions in `it` blocks.
+ */
+function removeReturns(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
+  if (isItExpression(node) && node.arguments[1].type === 'FunctionExpression') {
+    const itBody = node.arguments[1].body
+    for (let i = 0; i < itBody.body.length; i++) {
+      const expr = itBody.body[i]
+      if (expr.type === 'ReturnStatement' && expr.argument) {
+        const exprNotReturn: ExpressionStatement = {
+          type: 'ExpressionStatement',
+          expression: expr.argument,
         }
+        itBody.body[i] = exprNotReturn
+        return node
       }
     }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
   }
 }
