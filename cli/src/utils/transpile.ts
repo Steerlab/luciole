@@ -2,7 +2,14 @@ import * as path from 'path'
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
 import * as estraverse from 'estraverse'
-import type { CallExpression, ExpressionStatement, Program, Node } from 'estree'
+import type {
+  CallExpression,
+  ExpressionStatement,
+  Program,
+  Node,
+  FunctionExpression,
+  BlockStatement,
+} from 'estree'
 
 export function transpile(
   code: string,
@@ -16,7 +23,7 @@ export function transpile(
   edit(ast, removeLucioleImport)
   edit(ast, (node) => editImportsPaths(node, buildDestinationPath, testPath))
   edit(ast, removeToList)
-  ast = convertArrowFunToAnonymousFun(ast)
+  edit(ast, convertArrowFunToAnonymousFun)
   ast = removeReturns(ast)
   return generateCode(ast)
 }
@@ -137,7 +144,7 @@ function editImportsPaths(
 }
 
 /**
- * Turn `describe(toList([...]))` into `describe([...)])`
+ * Turn `toList([...])` into `[...]` at top-level of `describe` blocks.
  */
 function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
   if (
@@ -158,37 +165,26 @@ function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
   }
 }
 
-function convertArrowFunToAnonymousFun(ast: Program): Program {
-  const newBody: typeof ast.body = []
-  outerLoop: for (const node of ast.body) {
-    const newNode = structuredClone(node)
-    if (
-      node.type === 'ExpressionStatement' &&
-      newNode.type === 'ExpressionStatement' &&
-      isDescribeExpression(node.expression) &&
-      isDescribeExpression(newNode.expression)
-    ) {
-      const args = node.expression.arguments
-      const newArgs = newNode.expression.arguments
-      if (
-        args[1].type === 'ArrayExpression' &&
-        newArgs[1].type === 'ArrayExpression'
-      ) {
-        for (const newCall of newArgs[1].elements) {
-          if (isItExpression(newCall)) {
-            newCall.arguments[1].type = 'FunctionExpression'
-            newBody.push(newNode)
-            continue outerLoop
-          }
-        }
-      }
+/**
+ * Convert arrow functions to anonymous functions in `it` blocks.
+ */
+function convertArrowFunToAnonymousFun(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
+  if (
+    isItExpression(node) &&
+    node.arguments[1] !== undefined &&
+    node.arguments[1].type === 'ArrowFunctionExpression' &&
+    node.arguments[1].body.type === 'BlockStatement'
+  ) {
+    const body: BlockStatement = node.arguments[1].body
+    const anonymousFunction: FunctionExpression = {
+      type: 'FunctionExpression',
+      params: [],
+      body: body,
     }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
+    node.arguments[1] = anonymousFunction
+    return node
   }
 }
 
