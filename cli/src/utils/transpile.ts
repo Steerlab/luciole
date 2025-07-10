@@ -14,7 +14,8 @@ export function transpile(
   let ast: Program = structuredClone(astSource)
   edit(ast, moveDescribeToTopLevel)
   edit(ast, removeLucioleImport)
-  ast = editImportsPath(ast, buildDestinationPath, testPath)
+  edit(ast, (node) => editImportsPaths(node, buildDestinationPath, testPath))
+  // ast = editImportsPath(ast, buildDestinationPath, testPath)
   ast = removeToList(ast)
   ast = convertArrowFunToAnonymousFun(ast)
   ast = removeReturns(ast)
@@ -110,33 +111,29 @@ function removeLucioleImport(
   }
 }
 
-function editImportsPath(
-  ast: Program,
+/**
+ * Edit the path of imported packages to match the location of the build destination path.
+ */
+function editImportsPaths(
+  node: Node,
   buildDestinationPath: string,
   testPath: string,
-): Program {
+): Node | undefined | estraverse.VisitorOption {
   const importRelativePath = `${path.relative(testPath, buildDestinationPath)}/build/dev/javascript/luciole/`
-  const newBody: typeof ast.body = []
-  for (const node of ast.body) {
-    if (node.type === 'ImportDeclaration') {
-      let importPath: string = String(node.source.value) ?? ''
-      if (importPath.slice(0, 2) === './') {
-        importPath = importRelativePath + importPath.slice(2)
-      } else if (importPath.charAt(0) !== '/') {
-        importPath = importRelativePath + importPath
-      }
-      const newNode = structuredClone(node)
-      newNode.source.value = importPath
-      newNode.source.raw = `"${importPath}"`
-      newBody.push(newNode)
-      continue
+  if (
+    node.type === 'ImportDeclaration' &&
+    typeof node.source.value === 'string' &&
+    node.source.value.length > 0
+  ) {
+    let importPath: string = node.source.value
+    if (importPath.slice(0, 2) === './') {
+      importPath = importRelativePath + importPath.slice(2)
+    } else if (importPath.charAt(0) !== '/') {
+      importPath = importRelativePath + importPath
     }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
+    node.source.value = importPath
+    node.source.raw = `"${importPath}"`
+    return node
   }
 }
 
