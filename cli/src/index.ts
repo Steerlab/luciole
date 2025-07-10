@@ -18,7 +18,7 @@ program
   })
 
 program
-  .command('show_ast')
+  .command('show-ast')
   .description('Show AST (Abstract Syntaxic Tree) components.')
   .argument('<ts-path>', 'Path to TypeScript file.')
   .action((tsPath) => {
