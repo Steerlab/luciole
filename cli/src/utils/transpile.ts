@@ -13,7 +13,7 @@ export function transpile(
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
   edit(ast, moveDescribeToTopLevel)
-  ast = removeDescribeItImports(ast)
+  edit(ast, removeLucioleImport)
   ast = editImportsPath(ast, buildDestinationPath, testPath)
   ast = removeToList(ast)
   ast = convertArrowFunToAnonymousFun(ast)
@@ -54,7 +54,10 @@ function isDescribeExpression(expr: any): expr is CallExpression {
   )
 }
 
-function edit(ast: Program, fn: (node: Node) => Node | undefined) {
+function edit(
+  ast: Program,
+  fn: (node: Node) => Node | undefined | estraverse.VisitorOption,
+) {
   const newAst = estraverse.replace(ast, {
     enter(node) {
       return fn(node)
@@ -67,7 +70,9 @@ function edit(ast: Program, fn: (node: Node) => Node | undefined) {
  * Only the first describe node of the function is moved to top-level
  * while other nodes of the function are removed.
  */
-function moveDescribeToTopLevel(node: Node): Node | undefined {
+function moveDescribeToTopLevel(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
   if (
     node.type === 'ExportNamedDeclaration' &&
     node.declaration?.type === 'FunctionDeclaration' &&
@@ -91,21 +96,17 @@ function moveDescribeToTopLevel(node: Node): Node | undefined {
   }
 }
 
-function removeDescribeItImports(ast: Program): Program {
-  const newBody: typeof ast.body = []
-  for (const node of ast.body) {
-    if (
-      node.type === 'ImportDeclaration' &&
-      node.source.value === './luciole.mjs'
-    ) {
-      continue
-    }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
+/**
+ * Remove the import of luciole package.
+ */
+function removeLucioleImport(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'ImportDeclaration' &&
+    node.source.value === './luciole.mjs'
+  ) {
+    return estraverse.VisitorOption.Remove
   }
 }
 
