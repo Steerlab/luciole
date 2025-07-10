@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as espree from 'espree'
 import * as estraverse from 'estraverse'
-import type { Program } from 'estree'
+import type { Program, Node } from 'estree'
 
 export function showAST(filepath: string) {
   const absolutePath = path.resolve(filepath)
@@ -17,11 +17,35 @@ export function showAST(filepath: string) {
   let depth = 0
   estraverse.traverse(ast, {
     enter(node) {
-      console.log('| '.repeat(depth) + `${node.type} (${depth})`)
+      const indent = '| '.repeat(depth)
+      const description = getNodeDescription(node)
+      console.log(`${indent}${node.type} (${depth})${description}`)
       depth++
     },
     leave() {
       depth--
     },
   })
+}
+
+function getNodeDescription(node: Node): string {
+  switch (node.type) {
+    case 'Identifier':
+      return `: ${node.name}`
+    case 'Literal':
+      return `: ${JSON.stringify(node.value)}`
+    case 'TemplateElement':
+      return `: ${JSON.stringify(node.value.raw)}`
+    case 'BinaryExpression':
+    case 'LogicalExpression':
+      return `: ${node.operator}`
+    case 'MemberExpression':
+      return `: ${node.computed ? '[computed]' : ''}`
+    case 'VariableDeclarator':
+      return node.id && (node.id as any).name
+        ? `: ${(node.id as any).name}`
+        : ''
+    default:
+      return ''
+  }
 }
