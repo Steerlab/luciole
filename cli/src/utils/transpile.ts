@@ -1,7 +1,8 @@
+import * as path from 'path'
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
-import type { CallExpression, ExpressionStatement, Program } from 'estree'
-import path from 'path'
+import * as estraverse from 'estraverse'
+import type { CallExpression, ExpressionStatement, Program, Node } from 'estree'
 
 export function transpile(
   code: string,
@@ -11,7 +12,7 @@ export function transpile(
   console.log('Transpiling...')
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
-  ast = moveDescribeAtRoot(ast)
+  edit(ast, moveDescribeToTopLevel)
   ast = removeDescribeItImports(ast)
   ast = editImportsPath(ast, buildDestinationPath, testPath)
   ast = removeToList(ast)
@@ -53,39 +54,40 @@ function isDescribeExpression(expr: any): expr is CallExpression {
   )
 }
 
-function moveDescribeAtRoot(ast: Program): Program {
-  const newBody: typeof ast.body = []
+function edit(ast: Program, fn: (node: Node) => Node | undefined) {
+  const newAst = estraverse.replace(ast, {
+    enter(node) {
+      return fn(node)
+    },
+  })
+}
 
-  outerLoop: for (const node of ast.body) {
-    if (
-      node.type === 'ExportNamedDeclaration' &&
-      node.declaration?.type === 'FunctionDeclaration' &&
-      node.declaration?.id.name.endsWith('_test')
-    ) {
-      const functionBody = node.declaration?.body.body
-
-      for (const statement of functionBody) {
-        if (
-          statement.type === 'ReturnStatement' &&
-          statement.argument?.type === 'CallExpression'
-        ) {
-          const callExpression = statement.argument
-          const newNode: ExpressionStatement = {
-            type: 'ExpressionStatement',
-            expression: callExpression,
-          }
-
-          newBody.push(newNode)
-          continue outerLoop
+/**
+ * Move a describe node to top-level in a function whose name ends in "_test".
+ * Only the first describe node of the function is moved to top-level
+ * while other nodes of the function are removed.
+ */
+function moveDescribeToTopLevel(node: Node): Node | undefined {
+  if (
+    node.type === 'ExportNamedDeclaration' &&
+    node.declaration?.type === 'FunctionDeclaration' &&
+    node.declaration?.id.name.endsWith('_test')
+  ) {
+    const functionBody = node.declaration?.body.body
+    for (const statement of functionBody) {
+      if (
+        statement.type === 'ReturnStatement' &&
+        statement.argument?.type === 'CallExpression' &&
+        statement.argument.callee.type === 'Identifier' &&
+        statement.argument.callee.name === 'describe'
+      ) {
+        const newNode: ExpressionStatement = {
+          type: 'ExpressionStatement',
+          expression: statement.argument,
         }
+        return newNode
       }
     }
-    newBody.push(structuredClone(node))
-  }
-  return {
-    type: 'Program',
-    body: newBody,
-    sourceType: ast.sourceType,
   }
 }
 
