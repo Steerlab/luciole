@@ -21,27 +21,45 @@ export function copyGleamBuild(
   })
 }
 
-export async function readTest(buildDestinationPath: string): Promise<string> {
+export async function readTest(filePath: string): Promise<string> {
   console.log('Reading test...')
-  const filepath = `${buildDestinationPath}build/dev/javascript/luciole/describe_test.mjs`
-  const absolutePath = path.resolve(filepath)
-  return await fs.promises.readFile(absolutePath, 'utf-8')
+  return await fs.promises.readFile(filePath, 'utf-8')
 }
 
-export async function writeTest(content: string, dirpath: string) {
+export async function writeTest(content: string, filePath: string) {
   console.log('Writing test...')
-  const absolutePath = path.resolve(`${dirpath}describe_test.cy.js`)
-  const dir = path.dirname(absolutePath)
+  const dir = path.dirname(filePath)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  await fs.promises.writeFile(absolutePath, content, 'utf-8')
+  await fs.promises.writeFile(filePath, content, 'utf-8')
 }
 
-export function formatTest(filepath: string): void {
-  const absolutePath = path.resolve(filepath)
-  // prettier.format(`${absolutePath}/describe_test.cy.js`)
-  const cmd = `yarn prettier ${absolutePath}/describe_test.cy.js --write --ignore-path ''`
+export function formatTest(filePath: string): void {
+  const cmd = `yarn prettier ${filePath} --write --ignore-path ''`
   execSync(cmd, {
     encoding: 'utf-8',
     cwd: './',
   })
+}
+
+/**
+ * Recursively collects files which name ends in '_test'.
+ */
+export async function getAllTestFiles(
+  dir: string,
+  suffix = '_test',
+): Promise<string[]> {
+  const entries = await fs.promises.readdir(dir, { withFileTypes: true })
+  const files: string[] = []
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...(await getAllTestFiles(fullPath, suffix)))
+    } else {
+      const baseName = path.parse(entry.name).name
+      if (baseName.endsWith(suffix)) {
+        files.push(fullPath)
+      }
+    }
+  }
+  return files
 }

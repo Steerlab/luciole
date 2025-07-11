@@ -13,15 +13,17 @@ import type {
 
 export function transpile(
   code: string,
-  buildDestinationPath: string,
-  testPath: string,
+  buildDestFilePath: string,
+  cypressFilePath: string,
 ): string {
   console.log('Transpiling...')
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
   edit(ast, moveDescribeToTopLevel)
   edit(ast, removeLucioleImport)
-  edit(ast, (node) => editImportsPaths(node, buildDestinationPath, testPath))
+  edit(ast, (node) =>
+    editImportsPaths(node, buildDestFilePath, cypressFilePath),
+  )
   edit(ast, removeToList)
   edit(ast, convertArrowFunToAnonymousFun)
   edit(ast, removeReturns)
@@ -122,23 +124,31 @@ function removeLucioleImport(
  */
 function editImportsPaths(
   node: Node,
-  buildDestinationPath: string,
-  testPath: string,
+  buildDestFilePath: string,
+  cypressFilePath: string,
 ): Node | undefined | estraverse.VisitorOption {
-  const importRelativePath = `${path.relative(testPath, buildDestinationPath)}/build/dev/javascript/luciole/`
   if (
     node.type === 'ImportDeclaration' &&
     typeof node.source.value === 'string' &&
     node.source.value.length > 0
   ) {
-    let importPath: string = node.source.value
-    if (importPath.slice(0, 2) === './') {
-      importPath = importRelativePath + importPath.slice(2)
-    } else if (importPath.charAt(0) !== '/') {
-      importPath = importRelativePath + importPath
+    let srcImportPath: string = node.source.value
+    let newAbsoluteImportPath: string = path.resolve(
+      buildDestFilePath,
+      '..',
+      srcImportPath,
+    )
+    let newImportPath: string = path.relative(
+      cypressFilePath,
+      newAbsoluteImportPath,
+    )
+    if (srcImportPath.charAt(0) !== '/') {
+      srcImportPath = newImportPath
+    } else {
+      srcImportPath = newAbsoluteImportPath
     }
-    node.source.value = importPath
-    node.source.raw = `"${importPath}"`
+    node.source.value = srcImportPath
+    node.source.raw = `"${srcImportPath}"`
     return node
   }
 }
