@@ -46,7 +46,7 @@ gleam build --target=js # Compile the project and tests to JavaScript
 JavaScript CLI:
 ```sh
 yarn luciole [command] # Run the project
-yarn luciole transpile "gleam/" "cypress/" "cypress/e2e/generated_4/" # Run the project in my folder tree
+yarn luciole transpile "gleam" "cypress" "cypress/e2e/generated" # Run the project in my folder tree
 ```
 
 Cypress:

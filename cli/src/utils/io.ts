@@ -13,8 +13,8 @@ export function copyGleamBuild(
   buildDestinationPath: string,
 ): void {
   console.log('Copying build...')
-  const source = `${gleamPath}build/`
-  const dest = `${buildDestinationPath}build/`
+  const source = path.resolve(gleamPath, 'build')
+  const dest = path.resolve(buildDestinationPath, 'build')
   execSync(`cp -R ${source} ${dest}`, {
     encoding: 'utf-8',
     cwd: './',
