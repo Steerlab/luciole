@@ -1,7 +1,7 @@
 import luciole.{describe, it}
 import luciole/cypress as cy
 
-pub fn complex_describe_it_test() {
+pub fn complex_describe_it_cy() {
   // before(fn() { todo })
   // before_each(fn() { todo })
   // after_each(fn() { todo })

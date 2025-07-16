@@ -1,5 +1,5 @@
 import luciole.{describe}
 
-pub fn describe_only_test() {
+pub fn describe_only_cy() {
   describe("does nothing", [])
 }
