@@ -2,6 +2,7 @@ import * as path from 'path'
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
 import * as estraverse from 'estraverse'
+import { removeFirstPartOfPath } from './path_helper.ts'
 import type {
   CallExpression,
   ExpressionStatement,
@@ -75,7 +76,7 @@ function edit(
 }
 
 /**
- * Move a describe node to top-level in a function whose name ends in "_test".
+ * Move a describe node to top-level in a function whose name ends in "_cy".
  * Only the first describe node of the function is moved to top-level
  * while other nodes of the function are removed.
  */
@@ -85,7 +86,7 @@ function moveDescribeToTopLevel(
   if (
     node.type === 'ExportNamedDeclaration' &&
     node.declaration?.type === 'FunctionDeclaration' &&
-    node.declaration?.id.name.endsWith('_test')
+    node.declaration?.id.name.endsWith('_cy')
   ) {
     const functionBody = node.declaration?.body.body
     for (const statement of functionBody) {
@@ -113,7 +114,8 @@ function removeLucioleImport(
 ): Node | undefined | estraverse.VisitorOption {
   if (
     node.type === 'ImportDeclaration' &&
-    node.source.value === './luciole.mjs'
+    typeof node.source.value === 'string' &&
+    node.source.value.endsWith('luciole.mjs')
   ) {
     return estraverse.VisitorOption.Remove
   }
@@ -142,6 +144,7 @@ function editImportsPaths(
       cypressFilePath,
       newAbsoluteImportPath,
     )
+    newImportPath = removeFirstPartOfPath(newImportPath) // should remove "../"
     if (srcImportPath.charAt(0) !== '/') {
       srcImportPath = newImportPath
     } else {

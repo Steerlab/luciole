@@ -4,6 +4,7 @@ import * as path from 'node:path'
 import * as transpile from './utils/transpile.ts'
 import { Command } from 'commander'
 import { showAST } from './utils/show_ast.ts'
+import { setExtensionTo } from './utils/path_helper.ts'
 
 const program = new Command()
 
@@ -37,50 +38,44 @@ async function main(
   buildDest: string,
   testsDest: string,
 ): Promise<void> {
+  const testPrefix = path.join('test', 'cy')
+  const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
+  const testFiles = await io.getAllTestFiles(testFilesRoot)
+
   io.compileGleam(gleamSrc)
   io.copyGleamBuild(gleamSrc, buildDest)
 
-  const testFilesPath = path.resolve(gleamSrc, 'test') // search tests files in the "test" folder in gleamSrc
-  const testFiles = await io.getAllTestFiles(testFilesPath)
-
   for (const sourceFile of testFiles) {
-    console.log('\n' + sourceFile)
     const relativePath = path.relative(gleamSrc, sourceFile)
-    let cypressFilePath = path.join(testsDest, relativePath)
+    let relativePathWithoutPrefix = path.relative(testPrefix, relativePath) // remove test prefix
+    let cypressFilePath = path.resolve(
+      path.join(testsDest, relativePathWithoutPrefix),
+    )
+    cypressFilePath = setExtensionTo(cypressFilePath, '.cy.js')
+    let buildDestFilePath = path.resolve(
+      buildDest,
+      'build',
+      'dev',
+      'javascript',
+      'luciole',
+      'cy',
+      relativePathWithoutPrefix,
+    )
+    buildDestFilePath = setExtensionTo(buildDestFilePath, '.mjs')
+
+    console.log('\nsourceFile: ' + sourceFile)
+    // console.log('relativePath: ' + relativePath)
+    // console.log('relativePathWithoutPrefix: ' + relativePathWithoutPrefix)
+    // console.log('cypressFile: ' + cypressFilePath)
+    // console.log('buildDestFile: ' + buildDestFilePath)
 
     fs.mkdir(path.dirname(cypressFilePath), { recursive: true }, (err) => {
       if (err) {
         return console.error(err)
       }
     })
-
-    let relativePathWithoutTest = path.relative(
-      path.join(relativePath.split(path.sep)[0]),
-      relativePath,
-    ) // remove the first element of the path (should remove "test")
-    let buildDestFilePath = path.resolve(
-      buildDest,
-      'build',
-      'dev',
-      'javascript',
-      'luciole', // should generalize this but i don't know how yet
-      relativePathWithoutTest,
-    )
-    buildDestFilePath = path.format({
-      ...path.parse(buildDestFilePath),
-      base: undefined, // works only with this, idk why
-      ext: '.mjs',
-    })
-
     let testCode = await io.readTest(buildDestFilePath)
     testCode = transpile.transpile(testCode, buildDestFilePath, cypressFilePath)
-
-    // set the correct extension to generated files : .cy.js
-    cypressFilePath = path.format({
-      ...path.parse(cypressFilePath),
-      base: undefined, // works only with this, idk why
-      ext: '.cy.js',
-    })
     await io.writeTest(testCode, cypressFilePath)
     io.formatTest(cypressFilePath)
   }

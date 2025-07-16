@@ -1,7 +1,6 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
 import { execSync } from 'node:child_process'
-// import * as prettier from 'prettier'
 
 export function compileGleam(cwd: string): void {
   console.log('Compiling Gleam...')
@@ -14,8 +13,9 @@ export function copyGleamBuild(
 ): void {
   console.log('Copying build...')
   const source = path.resolve(gleamPath, 'build')
-  const dest = path.resolve(buildDestinationPath, 'build')
-  execSync(`cp -R ${source} ${dest}`, {
+  const dest = path.resolve(buildDestinationPath)
+  console.log(dest)
+  execSync(`cp -Rf ${source} ${dest}`, {
     encoding: 'utf-8',
     cwd: './',
   })
@@ -42,11 +42,11 @@ export function formatTest(filePath: string): void {
 }
 
 /**
- * Recursively collects files which name ends in '_test'.
+ * Recursively collects files which name ends in '_cy.gleam'.
  */
 export async function getAllTestFiles(
   dir: string,
-  suffix = '_test',
+  suffix = '_cy',
 ): Promise<string[]> {
   const entries = await fs.promises.readdir(dir, { withFileTypes: true })
   const files: string[] = []
@@ -56,7 +56,7 @@ export async function getAllTestFiles(
       files.push(...(await getAllTestFiles(fullPath, suffix)))
     } else {
       const baseName = path.parse(entry.name).name
-      if (baseName.endsWith(suffix)) {
+      if (baseName.endsWith(suffix) && path.extname(entry.name) === '.gleam') {
         files.push(fullPath)
       }
     }
