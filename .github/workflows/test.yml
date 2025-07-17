@@ -5,11 +5,16 @@ on:
     branches:
       - master
       - main
+      - github-workflow
   pull_request:
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: node:24
+    env:
+      ImageOS: ubuntu22
     steps:
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
@@ -17,7 +22,9 @@ jobs:
           otp-version: "27.1.2"
           gleam-version: "1.9.1"
           rebar3-version: "3"
-          # elixir-version: "1"
       - run: gleam deps download
-      - run: gleam test
+        working-directory: gleam
       - run: gleam format --check src test
+        working-directory: gleam
+      - run: yarn install
+      - run: yarn luciole transpile "gleam" "cypress" "cypress/e2e/generated_5"
