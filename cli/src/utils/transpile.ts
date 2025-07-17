@@ -20,7 +20,7 @@ export function transpile(
   console.log('Transpiling...')
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
-  edit(ast, moveDescribeToTopLevel)
+  edit(ast, moveDescribeItToTopLevel)
   edit(ast, removeLucioleImport)
   edit(ast, (node) =>
     editImportsPaths(node, buildDestFilePath, cypressFilePath),
@@ -80,7 +80,7 @@ function edit(
  * Only the first describe node of the function is moved to top-level
  * while other nodes of the function are removed.
  */
-function moveDescribeToTopLevel(
+function moveDescribeItToTopLevel(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
   if (
@@ -94,7 +94,8 @@ function moveDescribeToTopLevel(
         statement.type === 'ReturnStatement' &&
         statement.argument?.type === 'CallExpression' &&
         statement.argument.callee.type === 'Identifier' &&
-        statement.argument.callee.name === 'describe'
+        (statement.argument.callee.name === 'describe' ||
+          statement.argument.callee.name === 'it')
       ) {
         const newNode: ExpressionStatement = {
           type: 'ExpressionStatement',
