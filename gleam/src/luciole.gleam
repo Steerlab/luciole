@@ -18,3 +18,19 @@ pub fn describe(name: String, suite: List(Test)) -> Test {
 pub fn it(name: String, body: Body(a)) -> Test {
   Test(name, unsafe.coerce(body))
 }
+
+pub fn before(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}
+
+pub fn before_each(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}
+
+pub fn after(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}
+
+pub fn after_each(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}

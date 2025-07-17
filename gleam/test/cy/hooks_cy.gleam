@@ -1,0 +1,32 @@
+import luciole.{after, after_each, before, before_each, describe, it}
+import luciole/chain
+import luciole/cypress as cy
+import luciole/should
+
+pub fn describe_cy() {
+  describe("project", [
+    before("go to Traversal page", fn() {
+      cy.visit("https://example.cypress.io/commands/traversal")
+      cy.get("h1") |> should.contain("Traversal")
+    }),
+    before_each("go to Cypress example page", fn() {
+      cy.visit("https://example.cypress.io")
+    }),
+    after_each("we still are on the same page", fn() {
+      cy.wrap({ 2 + 2 }) |> should.equal(4)
+    }),
+    after("have the correct title", fn() {
+      cy.get("h1") |> should.contain("Kitchen Sink")
+    }),
+    it("is has the title Traversal", fn() {
+      cy.get("h1") |> should.contain("Kitchen")
+    }),
+    it("check that it contains Kitchen", fn() {
+      should.contain(cy.get("body"), "Kitchen")
+      cy.get("body") |> should.contain("Kitchen")
+      cy.get("body") |> chain.contains("Kitchen")
+      cy.contains("Kitchen")
+      cy.get("body") |> should.be_visible()
+    }),
+  ])
+}

@@ -21,6 +21,7 @@ export function transpile(
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
   edit(ast, moveDescribeItToTopLevel)
+  edit(ast, renameHooks)
   edit(ast, removeLucioleImport)
   edit(ast, (node) =>
     editImportsPaths(node, buildDestFilePath, cypressFilePath),
@@ -48,7 +49,6 @@ function generateCode(ast: Program): string {
 
 function isItExpression(expr: any): expr is CallExpression {
   return (
-    expr != null &&
     expr.type === 'CallExpression' &&
     expr.callee.type === 'Identifier' &&
     expr.callee.name === 'it'
@@ -57,10 +57,20 @@ function isItExpression(expr: any): expr is CallExpression {
 
 function isDescribeExpression(expr: any): expr is CallExpression {
   return (
-    expr != null &&
     expr.type === 'CallExpression' &&
     expr.callee.type === 'Identifier' &&
     expr.callee.name === 'describe'
+  )
+}
+
+function isHookExpression(expr: any): expr is CallExpression {
+  return (
+    expr.type === 'CallExpression' &&
+    expr.callee.type === 'Identifier' &&
+    (expr.callee.name === 'beforeEach' ||
+      expr.callee.name === 'afterEach' ||
+      expr.callee.name === 'before' ||
+      expr.callee.name === 'after')
   )
 }
 
@@ -105,6 +115,26 @@ function moveDescribeItToTopLevel(
       }
     }
   }
+}
+
+/**
+ * Rename after_each and before_each hooks to their camel case equivalent.
+ */
+function renameHooks(node: Node): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    (node.callee.name === 'before_each' || node.callee.name === 'after_each')
+  ) {
+    node.callee.name = camelize(node.callee.name)
+    return node
+  }
+}
+
+function camelize(str: string) {
+  return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function (_, chr) {
+    return chr.toUpperCase()
+  })
 }
 
 /**
@@ -186,7 +216,7 @@ function convertArrowFunToAnonymousFun(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
   if (
-    isItExpression(node) &&
+    (isItExpression(node) || isHookExpression(node)) &&
     node.arguments[1] !== undefined &&
     node.arguments[1].type === 'ArrowFunctionExpression' &&
     node.arguments[1].body.type === 'BlockStatement'
