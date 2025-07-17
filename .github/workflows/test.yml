@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - main
+      - github-workflow
   pull_request:
 
 jobs:
@@ -19,5 +20,8 @@ jobs:
           rebar3-version: "3"
           # elixir-version: "1"
       - run: gleam deps download
+        working-directory: gleam
       - run: gleam test
+        working-directory: gleam
       - run: gleam format --check src test
+        working-directory: gleam
