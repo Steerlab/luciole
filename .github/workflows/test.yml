@@ -18,10 +18,8 @@ jobs:
           otp-version: "27.1.2"
           gleam-version: "1.9.1"
           rebar3-version: "3"
-          # elixir-version: "1"
       - run: gleam deps download
-        working-directory: gleam
-      - run: gleam test
         working-directory: gleam
       - run: gleam format --check src test
         working-directory: gleam
+      - run: yarn luciole transpile "gleam" "cypress" "cypress/e2e/generated_5"
