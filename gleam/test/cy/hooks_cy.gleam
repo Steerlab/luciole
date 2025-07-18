@@ -12,13 +12,13 @@ pub fn describe_cy() {
     before_each("go to Cypress example page", fn() {
       cy.visit("https://example.cypress.io")
     }),
-    after_each("we still are on the same page", fn() {
+    after_each("is the same the same page", fn() {
       cy.wrap({ 2 + 2 }) |> should.equal(4)
     }),
-    after("have the correct title", fn() {
+    after("has the correct title", fn() {
       cy.get("h1") |> should.contain("Kitchen Sink")
     }),
-    it("is has the title Traversal", fn() {
+    it("has the title Kitchen", fn() {
       cy.get("h1") |> should.contain("Kitchen")
     }),
     it("check that it contains Kitchen", fn() {

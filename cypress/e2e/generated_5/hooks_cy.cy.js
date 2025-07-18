@@ -11,15 +11,15 @@ describe('project', [
   beforeEach('go to Cypress example page', function () {
     return $cy.visit('https://example.cypress.io')
   }),
-  afterEach('we still are on the same page', function () {
+  afterEach('is the same the same page', function () {
     let _pipe = $cy.wrap(2 + 2)
     return $should.equal(_pipe, 4)
   }),
-  after('have the correct title', function () {
+  after('has the correct title', function () {
     let _pipe = $cy.get('h1')
     return $should.contain(_pipe, 'Kitchen Sink')
   }),
-  it('is has the title Traversal', function () {
+  it('has the title Kitchen', function () {
     let _pipe = $cy.get('h1')
     $should.contain(_pipe, 'Kitchen')
   }),
