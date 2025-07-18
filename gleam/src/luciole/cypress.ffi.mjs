@@ -1,6 +1,11 @@
 export function contains(content) {
   return cy.contains(content)
 }
+
+export function do_nothing() {
+  // pass
+}
+
 export function exec(command) {
   return cy.exec(command)
 }
