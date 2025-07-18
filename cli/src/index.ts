@@ -14,10 +14,14 @@ program
     'Creates an AST from a JavaScript file, parse it and generate the resulting code.',
   )
   .argument('<gleam-src>', 'Path to root folder of Gleam project.')
-  .argument('<build-dest>', 'Destination path for build files.')
   .argument('<tests-dest>', 'Destination path to root folder of Cypress tests.')
-  .action((gleamSrc, buildDest, testsDest) => {
-    main(gleamSrc, buildDest, testsDest)
+  .option(
+    '-b, --build-dest <build-dest>',
+    'Destination path for build files. Default to its current location.',
+  )
+  // .argument('<build-dest>', 'Destination path for build files.')
+  .action((gleamSrc, testsDest, options) => {
+    main(gleamSrc, testsDest, options.buildDest)
   })
 
 program
@@ -35,9 +39,13 @@ program.parse(process.argv)
  */
 async function main(
   gleamSrc: string,
-  buildDest: string,
   testsDest: string,
+  buildDest: string,
 ): Promise<void> {
+  if (buildDest === undefined) {
+    buildDest = path.join(gleamSrc, 'build')
+  }
+
   const testPrefix = path.join('test', 'cy')
   const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
   const testFiles = await io.getAllTestFiles(testFilesRoot)

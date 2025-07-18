@@ -177,7 +177,7 @@ function editImportsPaths(
     )
     newImportPath = removeFirstPartOfPath(newImportPath) // should remove "../"
     if (srcImportPath.charAt(0) !== '/') {
-      srcImportPath = newImportPath
+      srcImportPath = '.' + path.sep + newImportPath
     } else {
       srcImportPath = newAbsoluteImportPath
     }
