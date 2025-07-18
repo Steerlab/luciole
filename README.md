@@ -56,7 +56,7 @@ yarn cypress open # Open Cypress
 
 ## About the API
 
-You have to write tests in a Gleam file with a name ending in "_test.gleam". Each test file should contain only one test at top-level and can contain any number of nested `describe` and `it`. A `describe` can contain other `describe` or `it`, and an `it` can only contain the test body.
+Your tests should be written in Gleam files with name ending in "_cy.gleam", and located in the folder `test/cy` of your Gleam project. Each test file should contain only one test at top-level. This test is composed of any number of nested `describe` and `it`, and at least one `it`. A `describe` can contain other `describe` and `it`. An `it` can only contain the test body.
 
 Those formats are correct: ✅
 - `it(body)`: one `it` at top-level
