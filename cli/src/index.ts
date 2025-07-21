@@ -5,6 +5,7 @@ import * as transpile from './utils/transpile.ts'
 import { Command } from 'commander'
 import { showAST } from './utils/show_ast.ts'
 import { setExtensionTo } from './utils/path_helper.ts'
+import { pathToFileURL } from 'node:url'
 
 const program = new Command()
 
@@ -45,7 +46,7 @@ async function main(
   if (buildDest === undefined) {
     buildDest = path.join(gleamSrc, 'build')
   }
-
+  const projectName = await io.getGleamProjectName(gleamSrc)
   const testPrefix = path.join('test', 'cy')
   const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
   const testFiles = await io.getAllTestFiles(testFilesRoot)
@@ -65,7 +66,7 @@ async function main(
       'build',
       'dev',
       'javascript',
-      'luciole',
+      projectName,
       'cy',
       relativePathWithoutPrefix,
     )

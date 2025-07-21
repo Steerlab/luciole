@@ -1,5 +1,6 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
+import * as toml from 'toml'
 import { execSync } from 'node:child_process'
 
 export function compileGleam(cwd: string): void {
@@ -62,4 +63,23 @@ export async function getAllTestFiles(
     }
   }
   return files
+}
+
+/**
+ * Looks for the project's name in the gleam.toml file.
+ * Starts to look for the file in current dir, then its ancestors recursively.
+ */
+export async function getGleamProjectName(dir: string): Promise<string> {
+  let curdir = dir
+  let filePath = path.join(curdir, 'gleam.toml')
+  if (fs.existsSync(filePath)) {
+    let content = await fs.promises.readFile(filePath, 'utf-8')
+    var data = toml.parse(content)
+    return data.name
+  } else {
+    if (curdir === path.sep) {
+      throw Error('"gleam.toml" file was not found. ')
+    }
+    return getGleamProjectName(path.resolve(curdir, '..'))
+  }
 }
