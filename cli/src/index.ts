@@ -73,10 +73,6 @@ async function main(
     buildDestFilePath = setExtensionTo(buildDestFilePath, '.mjs')
 
     console.log('\nsourceFile: ' + sourceFile)
-    // console.log('relativePath: ' + relativePath)
-    // console.log('relativePathWithoutPrefix: ' + relativePathWithoutPrefix)
-    // console.log('cypressFile: ' + cypressFilePath)
-    // console.log('buildDestFile: ' + buildDestFilePath)
 
     fs.mkdir(path.dirname(cypressFilePath), { recursive: true }, (err) => {
       if (err) {
@@ -86,7 +82,6 @@ async function main(
     let testCode = await io.readTest(buildDestFilePath)
     testCode = transpile.transpile(testCode, buildDestFilePath, cypressFilePath)
     await io.writeTest(testCode, cypressFilePath)
-    io.formatTest(cypressFilePath)
   }
 
   console.log('Done.')

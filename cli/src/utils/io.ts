@@ -1,6 +1,7 @@
 import * as path from 'node:path'
 import * as fs from 'node:fs'
 import * as toml from 'toml'
+import * as prettier from 'prettier'
 import { execSync } from 'node:child_process'
 
 export function compileGleam(cwd: string): void {
@@ -29,16 +30,20 @@ export async function readTest(filePath: string): Promise<string> {
 
 export async function writeTest(content: string, filePath: string) {
   console.log('Writing test...')
+  content = await formatTest(content, filePath)
   const dir = path.dirname(filePath)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
   await fs.promises.writeFile(filePath, content, 'utf-8')
 }
 
-export function formatTest(filePath: string): void {
-  const cmd = `yarn prettier ${filePath} --write --ignore-path ''`
-  execSync(cmd, {
-    encoding: 'utf-8',
-    cwd: './',
+export async function formatTest(
+  content: string,
+  filePath: string,
+): Promise<string> {
+  const config = await prettier.resolveConfig(filePath)
+  return await prettier.format(content, {
+    ...config,
+    parser: 'typescript',
   })
 }
 
