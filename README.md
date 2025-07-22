@@ -2,36 +2,49 @@
 
 An API for writting Cypress tests in Gleam and a CLI for compiling those tests in JavaScript.
 
+Luciole is the french word for firefly, but contrary to other bugs, this one will illuminate the night and help you find bugs in your app. It's made of an API for writting tests in Gleam and a CLI to translate them into Cypress-readable JavaScript code.
+
 <!-- [![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/) -->
 
+
+## Requirements
+
+- Node.js >= 24.x
+- Yarn >= 1.22
+- TypeScript >= 5.x
+- Gleam >= 1.9.x
+- Cypress >= 14.x
+
 ## Installation
 
-TODO
+Maybe try this? I am not sure how I will release this tool for now, since it's made of a Gleam API and a TypeScript CLI...
 
-## Usage
+```sh
+gleam add luciole
+yarn add luciole
+```
+
+## Get started
+
+Here is how to create a small test:
 
 ```gleam
 import luciole.{describe, it}
-import luciole/chain
 import luciole/cypress as cy
 import luciole/should
 
 pub fn describe_test() {
-  describe("project", [
+  describe("my awesome project", [
     it("goes to Cypress example page", fn() {
       cy.visit("https://example.cypress.io")
-      should.contain(cy.get("body"), "Kitchen")
       cy.get("body") |> should.contain("Kitchen")
-      cy.get("body") |> chain.contains("Kitchen")
-      cy.contains("Kitchen")
-      cy.get("body") |> should.be_visible()
     }),
   ])
 }
 ```
 
-<!-- Further documentation can be found at <https://hexdocs.pm/luciole>. -->
+More examples are available in [./gleam/test/cy](./gleam/test/cy).
 
 ## Development
 
@@ -54,9 +67,9 @@ Cypress:
 yarn cypress open # Open Cypress
 ```
 
-## About the API
+## More about the API
 
-Your tests should be written in Gleam files with name ending in "_cy.gleam", and located in the folder `test/cy` of your Gleam project. Each test file should contain only one test at top-level. This test is composed of any number of nested `describe` and `it`, and at least one `it`. A `describe` can contain other `describe` and `it`. An `it` can only contain the test body.
+Your tests should be written in Gleam files with name ending in "_cy.gleam", and located in the folder `test/cy` of your Gleam project. Each test file should contain only one test at top-level. This test is composed of any number of nested `describe` and `it`, and at least one inner `it` containing the test body. A `describe` can contain other `describe` and `it`. An `it` can only contain the test body.
 
 Those formats are correct: ✅
 - `it(body)`: one `it` at top-level
