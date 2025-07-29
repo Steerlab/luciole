@@ -1,9 +1,9 @@
-import luciole.{describe, it, it_only}
+import luciole.{describe, it, it_skip}
 import luciole/cypress as cy
 
 pub fn test_cy() {
   describe("outer describe", [
-    it_only("visits the kitchen 1 (only)", fn() {
+    it_skip("visits the kitchen 1 (skip)", fn() {
       cy.visit("https://example.cypress.io")
       cy.contains("Kitchen")
     }),

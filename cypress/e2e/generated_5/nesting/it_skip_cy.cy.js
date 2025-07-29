@@ -1,7 +1,7 @@
 import { toList } from './../../../build/dev/javascript/luciole/gleam.mjs'
 import * as $cy from './../../../build/dev/javascript/luciole/luciole/cypress.mjs'
 describe('outer describe', [
-  it.only('visits the kitchen 1 (only)', () => {
+  it.skip('visits the kitchen 1 (skip)', () => {
     $cy.visit('https://example.cypress.io')
     return $cy.contains('Kitchen')
   }),
