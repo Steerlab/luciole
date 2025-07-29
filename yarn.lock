@@ -34,6 +34,31 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
+"@types/escodegen@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@types/escodegen/-/escodegen-0.0.10.tgz#1699fef93d85f6457c67450d9c318c8e11e8dfc2"
+  integrity sha512-IVvcNLEFbiL17qiGRGzyfx/u9K6lA5w6wcQSIgv2h4JG3ZAFIY1Be9ITTSPuARIxRpzW54s8OvcF6PdonBbDzg==
+
+"@types/espree@^10.1.0":
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/@types/espree/-/espree-10.1.0.tgz#812ceee20384c4d9ea42f1445e4764a647431f17"
+  integrity sha512-uPQZdoUWWMuO6WS8/dwX1stZH/vOBa/wAniGnYEFI0IuU9RmLx6PLmo+VGfNOlbRc5I7hBsQc8H0zcdVI37kxg==
+  dependencies:
+    acorn "^8.12.0"
+    eslint-visitor-keys "^4.0.0"
+
+"@types/estraverse@^5.1.7":
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/@types/estraverse/-/estraverse-5.1.7.tgz#d0e45194ba425cf31f3740ee8cc46ca8aa768a7c"
+  integrity sha512-JRVtdKYZz7VkNp7hMC/WKoiZ8DS3byw20ZGoMZ1R8eBrBPIY7iBaDAS1zcrnXQCwK44G4vbXkimeU7R0VLG8UQ==
+  dependencies:
+    "@types/estree" "*"
+
+"@types/estree@*":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
+  integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
+
 "@types/node@*", "@types/node@^24.0.1":
   version "24.0.1"
   resolved "https://registry.npmjs.org/@types/node/-/node-24.0.1.tgz"
@@ -63,7 +88,7 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-acorn@^8.15.0:
+acorn@^8.12.0, acorn@^8.15.0:
   version "8.15.0"
   resolved "https://registry.npmjs.org/acorn/-/acorn-8.15.0.tgz"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
@@ -473,7 +498,7 @@ escodegen@^2.1.0:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-visitor-keys@^4.2.1:
+eslint-visitor-keys@^4.0.0, eslint-visitor-keys@^4.2.1:
   version "4.2.1"
   resolved "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-4.2.1.tgz"
   integrity sha512-Uhdk5sfqcee/9H/rCOJikYz67o0a2Tw2hGRPOG2Y1R2dg7brRe1uG0yaNQDHu+TO/uQPF/5eCapvYSmHUjt7JQ==
