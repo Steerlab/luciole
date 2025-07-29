@@ -17,6 +17,3 @@ pub fn visit(url: String) -> Chainable(a)
 
 @external(javascript, "./cypress.ffi.mjs", "wrap")
 pub fn wrap(subject: a) -> Chainable(a)
-
-@external(javascript, "./cypress.ffi.mjs", "do_nothing")
-pub fn do_nothing() -> Chainable(a)
