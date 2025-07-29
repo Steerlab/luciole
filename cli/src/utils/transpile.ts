@@ -22,6 +22,7 @@ export function transpile(
   let ast: Program = structuredClone(astSource)
   edit(ast, moveDescribeItToTopLevel)
   edit(ast, renameHooks)
+  edit(ast, editTestInclusion)
   edit(ast, removeLucioleImport)
   edit(ast, (node) =>
     editImportsPaths(node, buildDestFilePath, cypressFilePath),
@@ -93,6 +94,14 @@ function edit(
 function moveDescribeItToTopLevel(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
+  const topLevelNames = [
+    'describe',
+    'it',
+    'describe_only',
+    'describe_skip',
+    'it_only',
+    'it_skip',
+  ]
   if (
     node.type === 'ExportNamedDeclaration' &&
     node.declaration?.type === 'FunctionDeclaration' &&
@@ -104,8 +113,7 @@ function moveDescribeItToTopLevel(
         statement.type === 'ReturnStatement' &&
         statement.argument?.type === 'CallExpression' &&
         statement.argument.callee.type === 'Identifier' &&
-        (statement.argument.callee.name === 'describe' ||
-          statement.argument.callee.name === 'it')
+        topLevelNames.includes(statement.argument.callee.name)
       ) {
         const newNode: ExpressionStatement = {
           type: 'ExpressionStatement',
@@ -135,6 +143,35 @@ function camelize(str: string) {
   return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, function (_, chr) {
     return chr.toUpperCase()
   })
+}
+
+/**
+ * Change it_skip() to it.skip(), and similarly for it_only(), describe_only() and describe_skip().
+ */
+function editTestInclusion(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
+  const testInclusionNames = [
+    'it_only',
+    'it_skip',
+    'describe_only',
+    'describe_skip',
+  ]
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    testInclusionNames.includes(node.callee.name)
+  ) {
+    const identifiers = node.callee.name.split('_')
+    node.callee = {
+      type: 'MemberExpression',
+      object: { type: 'Identifier', name: identifiers[0] },
+      property: { type: 'Identifier', name: identifiers[1] },
+      computed: false,
+      optional: false,
+    }
+    return node
+  }
 }
 
 /**
@@ -188,7 +225,7 @@ function editImportsPaths(
 }
 
 /**
- * Turn `toList([...])` into `[...]` at top-level of `describe` blocks.
+ * Turn `describe("bla", toList([...]))` into `describe("bla", [...])` at top-level.
  */
 function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
   if (

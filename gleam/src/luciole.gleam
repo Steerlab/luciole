@@ -11,11 +11,33 @@ pub type Test {
   Suite(name: String, suite: List(Test))
 }
 
+pub type Enable {
+  Enable
+  Skip
+  Only
+}
+
 pub fn describe(name: String, suite: List(Test)) -> Test {
   Suite(name, suite)
 }
 
+pub fn describe_skip(name: String, suite: List(Test)) -> Test {
+  Suite(name, suite)
+}
+
+pub fn describe_only(name: String, suite: List(Test)) -> Test {
+  Suite(name, suite)
+}
+
 pub fn it(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}
+
+pub fn it_skip(name: String, body: Body(a)) -> Test {
+  Test(name, unsafe.coerce(body))
+}
+
+pub fn it_only(name: String, body: Body(a)) -> Test {
   Test(name, unsafe.coerce(body))
 }
 
