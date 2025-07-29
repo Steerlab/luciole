@@ -2,19 +2,17 @@
 
 An API for writting Cypress tests in Gleam and a CLI for compiling those tests in JavaScript.
 
-Luciole is the french word for firefly, but contrary to other bugs, this one will illuminate the night and help you find bugs in your app. It's made of an API for writting tests in Gleam and a CLI to translate them into Cypress-readable JavaScript code.
+Luciole is the french word for firefly, but contrary to other bugs, this one will illuminate the night and help you find bugs in your app. This tool has a Gleam API for writting Cypress tests, and a CLI to transpile them to JavaScript with Cypress syntax.
 
 <!-- [![Package Version](https://img.shields.io/hexpm/v/luciole)](https://hex.pm/packages/luciole)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/luciole/) -->
 
-
 ## Requirements
 
 - Node.js >= 24.x
-- Yarn >= 1.22
-- TypeScript >= 5.x
 - Gleam >= 1.9.x
 - Cypress >= 14.x
+- Any package manager (ex: yarn >= 1.22)
 
 ## Installation
 
@@ -48,14 +46,6 @@ More examples are available in [./gleam/test/cy](./gleam/test/cy).
 
 ## Development
 
-<!-- Cypress API in Gleam:
-```sh
-cd gleam
-gleam run # Run the project
-gleam test # Run the tests
-gleam build --target=js # Compile the project and tests to JavaScript
-``` -->
-
 JavaScript CLI:
 ```sh
 yarn luciole [command] # Run the project
@@ -82,3 +72,7 @@ Those formats are not correct: ❌
 - `describe( [body] )` : a test body outside of `it`
 - `it( [it(body)] )` : multiple `it` nested
 - `it( [describe(...)] )`: an `it` containing a `describe`
+
+The hooks (`before`, `after`, `before_each`, `after_each`) can be used like the `it`. Hooks, `it` and `describe` are all located in `luciole.gleam` module.
+
+Fonctions that can be called at the begining of a chain are in `luciole/cypress.gleam` module. Fonctions that can be chained after another fonction are in `luciole/chain.gleam` module. The `should` fonction of Cypress is represented by fonctions located in `luciole/should.gleam` module.
