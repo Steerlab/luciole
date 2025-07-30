@@ -49,22 +49,6 @@ function generateCode(ast: Program): string {
   return escodegen.generate(ast)
 }
 
-// function isItExpression(expr: any): expr is CallExpression {
-//   return (
-//     expr.type === 'CallExpression' &&
-//     expr.callee.type === 'Identifier' &&
-//     expr.callee.name === 'it'
-//   )
-// }
-
-// function isDescribeExpression(expr: any): expr is CallExpression {
-//   return (
-//     expr.type === 'CallExpression' &&
-//     expr.callee.type === 'Identifier' &&
-//     expr.callee.name === 'describe'
-//   )
-// }
-
 type DescribeOrIt = 'describe' | 'it' | 'any'
 type InclusionOption = 'enable' | 'skip' | 'only' | 'any'
 
@@ -280,7 +264,7 @@ function editImportsPaths(
 }
 
 /**
- * Turn `describe("bla", toList([x, y]))` into `describe("bla", function { x y })`.
+ * Turn `describe("bla", toList([x, y]))` into `describe("bla", function { x; y })`.
  */
 function editDescribeList(
   node: Node,
