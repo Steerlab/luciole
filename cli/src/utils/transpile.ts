@@ -10,6 +10,7 @@ import type {
   Node,
   FunctionExpression,
   BlockStatement,
+  MemberExpression,
 } from 'estree'
 
 export function transpile(
@@ -48,20 +49,74 @@ function generateCode(ast: Program): string {
   return escodegen.generate(ast)
 }
 
-function isItExpression(expr: any): expr is CallExpression {
-  return (
-    expr.type === 'CallExpression' &&
-    expr.callee.type === 'Identifier' &&
-    expr.callee.name === 'it'
-  )
+// function isItExpression(expr: any): expr is CallExpression {
+//   return (
+//     expr.type === 'CallExpression' &&
+//     expr.callee.type === 'Identifier' &&
+//     expr.callee.name === 'it'
+//   )
+// }
+
+// function isDescribeExpression(expr: any): expr is CallExpression {
+//   return (
+//     expr.type === 'CallExpression' &&
+//     expr.callee.type === 'Identifier' &&
+//     expr.callee.name === 'describe'
+//   )
+// }
+
+type DescribeOrIt = 'describe' | 'it' | 'any'
+type InclusionOption = 'enable' | 'skip' | 'only' | 'any'
+
+function isBlockExpression(
+  expr: any,
+  describeOrIt: DescribeOrIt,
+  inclusionOption: InclusionOption,
+): expr is CallExpression {
+  switch (inclusionOption) {
+    case 'skip':
+    case 'only':
+      return (
+        expr.type === 'CallExpression' &&
+        expr.callee.type === 'MemberExpression' &&
+        expr.callee.object.type === 'Identifier' &&
+        checkBlockName(expr.callee.object.name, describeOrIt) &&
+        expr.callee.property.type === 'Identifier' &&
+        expr.callee.property.name === inclusionOption
+      )
+    case 'enable':
+      return (
+        expr.type === 'CallExpression' &&
+        expr.callee.type === 'Identifier' &&
+        checkBlockName(expr.callee.name, describeOrIt)
+      )
+    case 'any':
+      return (
+        (expr.type === 'CallExpression' &&
+          expr.callee.type === 'MemberExpression' &&
+          expr.callee.object.type === 'Identifier' &&
+          checkBlockName(expr.callee.object.name, describeOrIt) &&
+          expr.callee.property.type === 'Identifier' &&
+          ['enable', 'skip', 'only'].includes(expr.callee.property.name)) ||
+        (expr.type === 'CallExpression' &&
+          expr.callee.type === 'Identifier' &&
+          checkBlockName(expr.callee.name, describeOrIt))
+      )
+    default:
+      return false
+  }
 }
 
-function isDescribeExpression(expr: any): expr is CallExpression {
-  return (
-    expr.type === 'CallExpression' &&
-    expr.callee.type === 'Identifier' &&
-    expr.callee.name === 'describe'
-  )
+function checkBlockName(name: string, describeOrIt: DescribeOrIt) {
+  switch (describeOrIt) {
+    case 'describe':
+    case 'it':
+      return name === describeOrIt
+    case 'any':
+      return name === 'describe' || name === 'it'
+    default:
+      return false
+  }
 }
 
 function isHookExpression(expr: any): expr is CallExpression {
@@ -232,7 +287,7 @@ function editDescribeList(
 ): Node | undefined | estraverse.VisitorOption {
   if (
     node.type === 'ExpressionStatement' &&
-    isDescribeExpression(node.expression)
+    isBlockExpression(node.expression, 'describe', 'any')
   ) {
     const args = node.expression.arguments
     if (
@@ -251,7 +306,6 @@ function editDescribeList(
       for (let i = 0; i < calls.length; i++) {
         const ci = calls[i]
         if (ci?.type === 'CallExpression') {
-          console.log('IS CALLEXPR')
           const expr: ExpressionStatement = {
             type: 'ExpressionStatement',
             expression: ci,
@@ -281,7 +335,7 @@ function convertItArrowFunToAnonymousFun(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
   if (
-    (isItExpression(node) || isHookExpression(node)) &&
+    (isBlockExpression(node, 'it', 'any') || isHookExpression(node)) &&
     node.arguments[1] !== undefined &&
     node.arguments[1].type === 'ArrowFunctionExpression' &&
     node.arguments[1].body.type === 'BlockStatement'
@@ -303,7 +357,10 @@ function convertItArrowFunToAnonymousFun(
 function removeReturns(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
-  if (isItExpression(node) && node.arguments[1].type === 'FunctionExpression') {
+  if (
+    isBlockExpression(node, 'it', 'any') &&
+    node.arguments[1].type === 'FunctionExpression'
+  ) {
     const itBody = node.arguments[1].body
     for (let i = 0; i < itBody.body.length; i++) {
       const expr = itBody.body[i]
