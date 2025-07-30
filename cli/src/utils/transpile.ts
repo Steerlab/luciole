@@ -27,8 +27,8 @@ export function transpile(
   edit(ast, (node) =>
     editImportsPaths(node, buildDestFilePath, cypressFilePath),
   )
-  edit(ast, removeToList)
-  edit(ast, convertArrowFunToAnonymousFun)
+  edit(ast, editDescribeList)
+  edit(ast, convertItArrowFunToAnonymousFun)
   edit(ast, removeReturns)
   return generateCode(ast)
 }
@@ -225,9 +225,11 @@ function editImportsPaths(
 }
 
 /**
- * Turn `describe("bla", toList([...]))` into `describe("bla", [...])` at top-level.
+ * Turn `describe("bla", toList([x, y]))` into `describe("bla", function { x y })`.
  */
-function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
+function editDescribeList(
+  node: Node,
+): Node | undefined | estraverse.VisitorOption {
   if (
     node.type === 'ExpressionStatement' &&
     isDescribeExpression(node.expression)
@@ -237,10 +239,36 @@ function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
       args[1] !== undefined &&
       args[1].type === 'CallExpression' &&
       args[1].callee.type === 'Identifier' &&
-      args[1].callee.name === 'toList'
+      args[1].callee.name === 'toList' &&
+      Array.isArray(args[1].arguments) &&
+      args[1].arguments.length > 0 &&
+      args[1].arguments[0].type === 'ArrayExpression' &&
+      args[1].arguments[0].elements.length > 0 &&
+      args[1].arguments[0].elements[0]?.type === 'CallExpression'
     ) {
-      const list = args[1].arguments[0] ?? []
-      node.expression.arguments[1] = list
+      const calls = args[1].arguments[0].elements
+      const exprs: ExpressionStatement[] = []
+      for (let i = 0; i < calls.length; i++) {
+        const ci = calls[i]
+        if (ci?.type === 'CallExpression') {
+          console.log('IS CALLEXPR')
+          const expr: ExpressionStatement = {
+            type: 'ExpressionStatement',
+            expression: ci,
+          }
+          exprs.push(expr)
+        }
+      }
+
+      const funExpr: FunctionExpression = {
+        type: 'FunctionExpression',
+        params: [],
+        body: {
+          type: 'BlockStatement',
+          body: exprs,
+        },
+      }
+      node.expression.arguments[1] = funExpr
       return node
     }
   }
@@ -249,7 +277,7 @@ function removeToList(node: Node): Node | undefined | estraverse.VisitorOption {
 /**
  * Convert arrow functions to anonymous functions in `it` blocks.
  */
-function convertArrowFunToAnonymousFun(
+function convertItArrowFunToAnonymousFun(
   node: Node,
 ): Node | undefined | estraverse.VisitorOption {
   if (
