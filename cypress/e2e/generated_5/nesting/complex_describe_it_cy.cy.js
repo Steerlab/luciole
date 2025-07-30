@@ -17,4 +17,7 @@ function dummy() {
     ]),
   )
 }
-describe('outer describe', [visits_the_kitchen(), dummy()])
+describe('outer describe', function () {
+  visits_the_kitchen()
+  dummy()
+})

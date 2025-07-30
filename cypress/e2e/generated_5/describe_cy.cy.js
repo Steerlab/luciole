@@ -2,7 +2,7 @@ import { toList } from './../../build/dev/javascript/luciole/gleam.mjs'
 import * as $chain from './../../build/dev/javascript/luciole/luciole/chain.mjs'
 import * as $cy from './../../build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from './../../build/dev/javascript/luciole/luciole/should.mjs'
-describe('project', [
+describe('project', function () {
   it('goes to Cypress example page', function () {
     $cy.visit('https://example.cypress.io')
     $should.contain($cy.get('body'), 'Kitchen')
@@ -13,5 +13,5 @@ describe('project', [
     $cy.contains('Kitchen')
     let _pipe$2 = $cy.get('body')
     $should.be_visible(_pipe$2)
-  }),
-])
+  })
+})
