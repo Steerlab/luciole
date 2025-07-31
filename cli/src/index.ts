@@ -12,15 +12,20 @@ const program = new Command()
 program
   .command('transpile')
   .description(
-    'Creates an AST from a JavaScript file, parse it and generate the resulting code.',
+    'Compiles to JavaScript test files formatted with Luciole, parse and edit their AST to follow Cypress conventions, and generate the resulting code in Cypress-compatible files.',
   )
-  .argument('<gleam-src>', 'Path to root folder of Gleam project.')
-  .argument('<tests-dest>', 'Destination path to root folder of Cypress tests.')
+  .argument(
+    '<gleam-src>',
+    'Path to root folder of a Gleam project with tests formatted with Luciole.',
+  )
+  .argument(
+    '[tests-dest]',
+    'Path to folder where test files will be generated. If not specified, will look for any "cypress" folder in the gleam directory and its ancestors.',
+  )
   .option(
     '-b, --build-dest <build-dest>',
-    'Destination path for build files. Default to its current location.',
+    'Destination path for build files. Default to their current location, meaning that the generated files will imports modules from the build created by Gleam.',
   )
-  // .argument('<build-dest>', 'Destination path for build files.')
   .action((gleamSrc, testsDest, options) => {
     main(gleamSrc, testsDest, options.buildDest)
   })
@@ -36,23 +41,33 @@ program
 program.parse(process.argv)
 
 /**
- * Iterate recursively on tests, transpile them and generate them in a copied tree folder structure.
+ * Iterate recursively on tests, transpile them and generate them in an identical file tree.
  */
 async function main(
   gleamSrc: string,
   testsDest: string,
   buildDest: string,
 ): Promise<void> {
+  // args handling
   if (buildDest === undefined) {
     buildDest = path.join(gleamSrc, 'build')
   }
+  if (testsDest === undefined) {
+    const defaultDest = path.join('cypress', 'e2e')
+    testsDest = await io.findFileInAncestors(defaultDest, gleamSrc)
+    testsDest = path.join(testsDest, 'luciole')
+    if (!fs.existsSync(testsDest)) fs.mkdirSync(testsDest, { recursive: true })
+  }
+
   const projectName = await io.getGleamProjectName(gleamSrc)
   const testPrefix = path.join('test', 'cy')
   const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
   const testFiles = await io.getAllTestFiles(testFilesRoot)
 
   io.compileGleam(gleamSrc)
-  io.copyGleamBuild(gleamSrc, buildDest)
+  if (gleamSrc !== buildDest) {
+    io.copyGleamBuild(gleamSrc, buildDest)
+  }
 
   for (const sourceFile of testFiles) {
     const relativePath = path.relative(gleamSrc, sourceFile)

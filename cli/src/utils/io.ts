@@ -75,16 +75,25 @@ export async function getAllTestFiles(
  * Starts to look for the file in current dir, then its ancestors recursively.
  */
 export async function getGleamProjectName(dir: string): Promise<string> {
-  let curdir = dir
-  let filePath = path.join(curdir, 'gleam.toml')
-  if (fs.existsSync(filePath)) {
-    let content = await fs.promises.readFile(filePath, 'utf-8')
-    var data = toml.parse(content)
-    return data.name
+  const filePath = await findFileInAncestors('gleam.toml', dir)
+  const content = await fs.promises.readFile(filePath, 'utf-8')
+  const data = toml.parse(content)
+  return data.name
+}
+
+/**
+ * Looks for a file in the given directory and its ancestor, then return its absolute path.
+ */
+export async function findFileInAncestors(
+  search: string,
+  curdir: string,
+): Promise<string> {
+  const curpath = path.join(curdir, search)
+  if (fs.existsSync(curpath)) {
+    return curpath
+  } else if (curdir === path.sep) {
+    throw Error(search + ' was not found.')
   } else {
-    if (curdir === path.sep) {
-      throw Error('"gleam.toml" file was not found. ')
-    }
-    return getGleamProjectName(path.resolve(curdir, '..'))
+    return findFileInAncestors(search, path.resolve(curdir, '..'))
   }
 }
