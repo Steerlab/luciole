@@ -33,6 +33,10 @@ export function transpile(
   return generateCode(ast)
 }
 
+function generateCode(ast: Program): string {
+  return escodegen.generate(ast)
+}
+
 function getAst(code: string): Program {
   const ast = espree.parse(code, {
     ecmaVersion: 'latest',
@@ -44,8 +48,15 @@ function getAst(code: string): Program {
   return ast
 }
 
-function generateCode(ast: Program): string {
-  return escodegen.generate(ast)
+function edit(
+  ast: Program,
+  fn: (node: Node) => Node | undefined | estraverse.VisitorOption,
+) {
+  const newAst = estraverse.replace(ast, {
+    enter(node) {
+      return fn(node)
+    },
+  })
 }
 
 type DescribeOrIt = 'describe' | 'it' | 'any'
@@ -111,17 +122,6 @@ function isHookExpression(expr: any): expr is CallExpression {
       expr.callee.name === 'before' ||
       expr.callee.name === 'after')
   )
-}
-
-function edit(
-  ast: Program,
-  fn: (node: Node) => Node | undefined | estraverse.VisitorOption,
-) {
-  const newAst = estraverse.replace(ast, {
-    enter(node) {
-      return fn(node)
-    },
-  })
 }
 
 /**
