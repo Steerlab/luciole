@@ -5,7 +5,6 @@ import * as transpile from './utils/transpile.ts'
 import { Command } from 'commander'
 import { showAST } from './utils/show_ast.ts'
 import { setExtensionTo } from './utils/path_helper.ts'
-import { pathToFileURL } from 'node:url'
 
 const program = new Command()
 

@@ -10,7 +10,6 @@ import type {
   Node,
   FunctionExpression,
   BlockStatement,
-  MemberExpression,
 } from 'estree'
 
 export function transpile(
