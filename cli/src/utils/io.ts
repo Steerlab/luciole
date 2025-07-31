@@ -48,11 +48,11 @@ export async function formatTest(
 }
 
 /**
- * Recursively collects files which name ends in '_cy.gleam'.
+ * Recursively collects Gleam files which name ends with the given suffix.
  */
 export async function getAllTestFiles(
   dir: string,
-  suffix = '_cy',
+  suffix: string = '_cy',
 ): Promise<string[]> {
   const entries = await fs.promises.readdir(dir, { withFileTypes: true })
   const files: string[] = []
@@ -62,7 +62,10 @@ export async function getAllTestFiles(
       files.push(...(await getAllTestFiles(fullPath, suffix)))
     } else {
       const baseName = path.parse(entry.name).name
-      if (baseName.endsWith(suffix) && path.extname(entry.name) === '.gleam') {
+      if (
+        path.extname(entry.name) === '.gleam' &&
+        (suffix === '' || baseName.endsWith(suffix))
+      ) {
         files.push(fullPath)
       }
     }

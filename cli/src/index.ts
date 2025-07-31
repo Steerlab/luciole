@@ -61,7 +61,7 @@ async function main(
   const projectName = await io.getGleamProjectName(gleamSrc)
   const testPrefix = path.join('test', 'cy')
   const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
-  const testFiles = await io.getAllTestFiles(testFilesRoot)
+  const testFiles = await io.getAllTestFiles(testFilesRoot, '')
 
   io.compileGleam(gleamSrc)
   if (gleamSrc !== buildDest) {
