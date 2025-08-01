@@ -10,6 +10,7 @@ import type {
   Node,
   FunctionExpression,
   BlockStatement,
+  Identifier,
 } from 'estree'
 
 export function transpile(
@@ -20,10 +21,15 @@ export function transpile(
   console.log('Transpiling...')
   const astSource: Program = getAst(code)
   let ast: Program = structuredClone(astSource)
+
+  const moduleAliases: string[] = []
+  const funAliases: Record<string, string> = {}
+
+  edit(ast, (node) => removeLucioleImports(node, moduleAliases, funAliases))
+  edit(ast, (node) => removeLucioleAliases(node, moduleAliases, funAliases))
   edit(ast, moveDescribeItToTopLevel)
   edit(ast, renameHooks)
   edit(ast, editTestInclusion)
-  edit(ast, removeLucioleImport)
   edit(ast, (node) =>
     editImportsPaths(node, buildDestFilePath, cypressFilePath),
   )
@@ -52,7 +58,7 @@ function edit(
   ast: Program,
   fn: (node: Node) => Node | undefined | estraverse.VisitorOption,
 ) {
-  const newAst = estraverse.replace(ast, {
+  estraverse.replace(ast, {
     enter(node) {
       return fn(node)
     },
@@ -122,6 +128,82 @@ function isHookExpression(expr: any): expr is CallExpression {
       expr.callee.name === 'before' ||
       expr.callee.name === 'after')
   )
+}
+
+/**
+ * Remove imports of the luciole package.
+ * Put the module aliases in the given list.
+ * Put the functions aliases in the given record.
+ */
+function removeLucioleImports(
+  node: Node,
+  moduleAliases: string[],
+  funAliases: Record<string, string>,
+): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'ImportDeclaration' &&
+    typeof node.source.value === 'string' &&
+    node.source.value.endsWith(path.join(path.sep, 'luciole.mjs'))
+  ) {
+    node.specifiers.forEach((specifier) => {
+      if (specifier.type === 'ImportNamespaceSpecifier') {
+        const alias = specifier.local.name
+        if (!moduleAliases.includes(alias)) moduleAliases.push(alias)
+      }
+      if (
+        specifier.type === 'ImportSpecifier' &&
+        specifier.imported.type === 'Identifier'
+      ) {
+        const imported_name = specifier.imported.name
+        const local_name = specifier.local.name
+        if (imported_name !== local_name) {
+          funAliases[local_name] = imported_name
+        }
+      }
+    })
+    return estraverse.VisitorOption.Remove
+  }
+}
+
+/**
+ * This function removes Luciole module aliases and
+ * replaces Luciole base module's function aliases by their corresponding name.
+ */
+function removeLucioleAliases(
+  node: Node,
+  moduleAliases: string[],
+  funAliases: Record<string, string>,
+): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'MemberExpression' &&
+    node.callee.object.type === 'Identifier' &&
+    node.callee.property.type === 'Identifier' &&
+    moduleAliases.includes(node.callee.object.name)
+  ) {
+    const funName = node.callee.property.name
+    const newExpression: Identifier = {
+      type: 'Identifier',
+      name: funName,
+    }
+    node.callee = newExpression
+    return removeLucioleFunAliases(node, funAliases)
+  }
+  return removeLucioleFunAliases(node, funAliases)
+}
+
+function removeLucioleFunAliases(
+  node: Node,
+  funAliases: Record<string, string>,
+): Node | undefined | estraverse.VisitorOption {
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    funAliases[node.callee.name] !== undefined
+  ) {
+    node.callee.name = funAliases[node.callee.name]
+    return node
+  }
 }
 
 /**
@@ -209,21 +291,6 @@ function editTestInclusion(
       optional: false,
     }
     return node
-  }
-}
-
-/**
- * Remove the import of luciole package.
- */
-function removeLucioleImport(
-  node: Node,
-): Node | undefined | estraverse.VisitorOption {
-  if (
-    node.type === 'ImportDeclaration' &&
-    typeof node.source.value === 'string' &&
-    node.source.value.endsWith('luciole.mjs')
-  ) {
-    return estraverse.VisitorOption.Remove
   }
 }
 

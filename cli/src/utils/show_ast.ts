@@ -14,18 +14,19 @@ export function showAST(filepath: string) {
       jsx: true,
     },
   }) as Program
-  let depth = 0
-  estraverse.traverse(ast, {
-    enter(node) {
-      const indent = '| '.repeat(depth)
-      const description = getNodeDescription(node)
-      console.log(`${indent}${node.type} (${depth})${description}`)
-      depth++
-    },
-    leave() {
-      depth--
-    },
-  })
+  console.log(JSON.stringify(ast))
+  // let depth = 0
+  // estraverse.traverse(ast, {
+  //   enter(node) {
+  //     const indent = '| '.repeat(depth)
+  //     const description = getNodeDescription(node)
+  //     console.log(`${indent}${node.type} (${depth})${description}`)
+  //     depth++
+  //   },
+  //   leave() {
+  //     depth--
+  //   },
+  // })
 }
 
 function getNodeDescription(node: Node): string {
