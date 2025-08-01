@@ -1,7 +1,7 @@
 *.beam
 *.ez
-**/build
 erl_crash.dump
-ignore
-node_modules
-dist
+**/build
+**/ignore
+**/dist
+/node_modules
