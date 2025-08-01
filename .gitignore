@@ -1,8 +1,6 @@
 *.beam
 *.ez
-/build
-/gleam/build
-/cypress/build
+**/build
 erl_crash.dump
 ignore
 node_modules
