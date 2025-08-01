@@ -1,11 +1,11 @@
-import { toList } from './../../../../api/build/build/dev/javascript/luciole/gleam.mjs'
-import * as $cypress from './../../../../api/build/build/dev/javascript/luciole/luciole/cypress.mjs'
+import { toList } from './../../../../api/build/dev/javascript/luciole/gleam.mjs'
+import * as $cypress from './../../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
 import {
   get as lu_get,
   visit as lu_visit,
-} from './../../../../api/build/build/dev/javascript/luciole/luciole/cypress.mjs'
-import * as $should from './../../../../api/build/build/dev/javascript/luciole/luciole/should.mjs'
-import { contain as lu_contain } from './../../../../api/build/build/dev/javascript/luciole/luciole/should.mjs'
+} from './../../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
+import * as $should from './../../../../api/build/dev/javascript/luciole/luciole/should.mjs'
+import { contain as lu_contain } from './../../../../api/build/dev/javascript/luciole/luciole/should.mjs'
 
 describe('example', function () {
   it('does this', function () {
