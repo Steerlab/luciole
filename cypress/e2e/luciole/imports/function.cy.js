@@ -6,6 +6,7 @@ import {
 } from './../../../../api/build/build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from './../../../../api/build/build/dev/javascript/luciole/luciole/should.mjs'
 import { contain } from './../../../../api/build/build/dev/javascript/luciole/luciole/should.mjs'
+
 describe('example', function () {
   it('does this', function () {
     visit('https://example.cypress.io')

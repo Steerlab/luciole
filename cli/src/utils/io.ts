@@ -3,6 +3,7 @@ import * as fs from 'node:fs'
 import * as toml from 'toml'
 import * as prettier from 'prettier'
 import { execSync } from 'node:child_process'
+import { ESLint } from 'eslint'
 
 export function compileGleam(cwd: string): void {
   console.log('Compiling Gleam...')
@@ -41,10 +42,41 @@ export async function formatTest(
   filePath: string,
 ): Promise<string> {
   const config = await prettier.resolveConfig(filePath)
-  return await prettier.format(content, {
+  content = await prettier.format(content, {
     ...config,
     parser: 'typescript',
   })
+  const eslint = new ESLint({
+    fix: true,
+    overrideConfig: {
+      languageOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      rules: {
+        'padding-line-between-statements': [
+          'error',
+          {
+            blankLine: 'always',
+            prev: ['import'],
+            next: ['expression'],
+          },
+          {
+            blankLine: 'always',
+            prev: ['function'],
+            next: ['*'],
+          },
+          {
+            blankLine: 'always',
+            prev: ['*'],
+            next: ['function'],
+          },
+        ],
+      },
+    },
+  })
+  const results = await eslint.lintText(content)
+  return results[0].output ?? content
 }
 
 /**
