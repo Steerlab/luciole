@@ -14,10 +14,9 @@ export function copyGleamBuild(
   gleamPath: string,
   buildDestinationPath: string,
 ): void {
-  console.log('Copying build...')
   const source = path.resolve(gleamPath, 'build')
   const dest = path.resolve(buildDestinationPath)
-  console.log(dest)
+  console.log('Copying build from "' + source + '" to "' + dest + '".')
   execSync(`cp -Rf ${source} ${dest}`, {
     encoding: 'utf-8',
     cwd: './',
@@ -25,12 +24,12 @@ export function copyGleamBuild(
 }
 
 export async function readTest(filePath: string): Promise<string> {
-  console.log('Reading test...')
+  console.log('Reading from "' + path.relative('.', filePath) + '".')
   return await fs.promises.readFile(filePath, 'utf-8')
 }
 
 export async function writeTest(content: string, filePath: string) {
-  console.log('Writing test...')
+  console.log('Writing at "' + path.relative('.', filePath) + '".')
   content = await formatTest(content, filePath)
   const dir = path.dirname(filePath)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
@@ -98,7 +97,7 @@ export async function getAllTestFiles(
         path.extname(entry.name) === '.gleam' &&
         (suffix === '' || baseName.endsWith(suffix))
       ) {
-        files.push(fullPath)
+        files.push(path.resolve(fullPath))
       }
     }
   }
@@ -117,7 +116,7 @@ export async function getGleamProjectName(dir: string): Promise<string> {
 }
 
 /**
- * Looks for a file in the given directory and its ancestor, then return its absolute path.
+ * Looks for a file in the given directory and its ancestors, then return its absolute path.
  */
 export async function findFileInAncestors(
   search: string,
@@ -127,7 +126,11 @@ export async function findFileInAncestors(
   if (fs.existsSync(curpath)) {
     return curpath
   } else if (curdir === path.sep) {
-    throw Error(search + ' was not found.')
+    throw Error(
+      search +
+        ' was not found. ' +
+        '(Are your tests files located in the directory "test/cy/" of the Gleam project?)',
+    )
   } else {
     return findFileInAncestors(search, path.resolve(curdir, '..'))
   }
