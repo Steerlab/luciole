@@ -18,6 +18,14 @@ export function equal(prev, val) {
   return prev.should('equal', val)
 }
 
+export function have_class(prev, class_) {
+  return prev.should('have.class', class_)
+}
+
+export function have_prop(prev, prop) {
+  return prev.should('have.prop', prop)
+}
+
 export function have_value(prev, val) {
   return prev.should('have.value', val)
 }
