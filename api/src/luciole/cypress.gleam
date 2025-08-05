@@ -13,7 +13,7 @@ pub fn get(selector: String) -> Chainable(a)
 pub fn location() -> Chainable(a)
 
 @external(javascript, "./cypress.ffi.mjs", "visit")
-pub fn visit(url: String) -> Chainable(a)
+pub fn visit(url: String) -> Chainable(Nil)
 
 @external(javascript, "./cypress.ffi.mjs", "wrap")
 pub fn wrap(subject: a) -> Chainable(a)
