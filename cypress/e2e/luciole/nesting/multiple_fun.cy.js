@@ -4,7 +4,7 @@ import * as $cy from './../../../../api/build/dev/javascript/luciole/luciole/cyp
 function visits_the_kitchen() {
   return it('visits the kitchen', function () {
     $cy.visit('https://example.cypress.io')
-    $cy.contains('Kitchen')
+    $cy.contain('Kitchen')
   })
 }
 
@@ -14,7 +14,7 @@ function dummy() {
     toList([
       it('visits utilites', function () {
         $cy.visit('https://example.cypress.io/utilities')
-        $cy.contains('Utilities')
+        $cy.contain('Utilities')
       }),
     ]),
   )

@@ -6,7 +6,7 @@ pub fn nested_describe_cy() {
     describe("inner describe", [
       it("visits the kitchen", fn() {
         cy.visit("https://example.cypress.io")
-        cy.contains("Kitchen")
+        cy.contain("Kitchen")
       }),
     ]),
   ])

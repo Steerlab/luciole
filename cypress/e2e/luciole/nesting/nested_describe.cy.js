@@ -5,7 +5,7 @@ describe('outer describe', function () {
   describe('inner describe', function () {
     it('visits the kitchen', function () {
       $cy.visit('https://example.cypress.io')
-      $cy.contains('Kitchen')
+      $cy.contain('Kitchen')
     })
   })
 })

@@ -4,10 +4,10 @@ import * as $cy from './../../../../api/build/dev/javascript/luciole/luciole/cyp
 describe('outer describe', function () {
   it.skip('visits the kitchen 1 (skip)', function () {
     $cy.visit('https://example.cypress.io')
-    $cy.contains('Kitchen')
+    $cy.contain('Kitchen')
   })
   it('visits the kitchen 2', function () {
     $cy.visit('https://example.cypress.io')
-    $cy.contains('Kitchen')
+    $cy.contain('Kitchen')
   })
 })

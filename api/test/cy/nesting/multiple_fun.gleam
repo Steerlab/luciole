@@ -8,7 +8,7 @@ pub fn complex_describe_it_cy() {
 fn visits_the_kitchen() {
   it("visits the kitchen", fn() {
     cy.visit("https://example.cypress.io")
-    cy.contains("Kitchen")
+    cy.contain("Kitchen")
   })
 }
 
@@ -16,7 +16,7 @@ fn dummy() {
   describe("inner describe", [
     it("visits utilites", fn() {
       cy.visit("https://example.cypress.io/utilities")
-      cy.contains("Utilities")
+      cy.contain("Utilities")
     }),
   ])
 }

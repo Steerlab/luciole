@@ -6,13 +6,13 @@ pub fn test_cy() {
     describe_only("inner describe 1 (only)", [
       it("check the kitchen 1", fn() {
         cy.visit("https://example.cypress.io")
-        cy.contains("Kitchen")
+        cy.contain("Kitchen")
       }),
     ]),
     describe("inner describe 2", [
       it("check the kitchen 2", fn() {
         cy.visit("https://example.cypress.io")
-        cy.contains("Kitchen")
+        cy.contain("Kitchen")
       }),
     ]),
   ])

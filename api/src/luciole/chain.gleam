@@ -6,8 +6,8 @@ pub fn attach_file(prev: Chainable(a), filepath: String) -> Chainable(a)
 @external(javascript, "./chain.ffi.mjs", "click")
 pub fn click(prev: Chainable(a)) -> Chainable(a)
 
-@external(javascript, "./chain.ffi.mjs", "contains")
-pub fn contains(prev: Chainable(a), content: String) -> Chainable(b)
+@external(javascript, "./chain.ffi.mjs", "contain")
+pub fn contain(prev: Chainable(a), content: String) -> Chainable(b)
 
 @external(javascript, "./chain.ffi.mjs", "each")
 pub fn each(prev: Chainable(a), fun: fn(a) -> b) -> Chainable(a)

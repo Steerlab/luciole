@@ -1,4 +1,4 @@
-export function contains(content) {
+export function contain(content) {
   return cy.contains(content)
 }
 

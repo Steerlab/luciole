@@ -22,7 +22,7 @@ describe("let's test should", function () {
     let _pipe$3 = $cy.get('h1')
     $should.contain(_pipe$3, 'Kitchen')
     let _pipe$4 = $cy.get('a')
-    let _pipe$5 = $chain.contains(_pipe$4, 'cypress.io')
+    let _pipe$5 = $chain.contain(_pipe$4, 'cypress.io')
     $should.have_class(_pipe$5, 'navbar-brand')
   })
 })

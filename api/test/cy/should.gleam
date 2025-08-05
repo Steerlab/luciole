@@ -16,7 +16,7 @@ pub fn ex_cy() {
       cy.get("h1") |> should.have_prop("tagName") |> should.equal("H1")
       cy.get("h1") |> should.contain("Kitchen")
       cy.get("a")
-      |> chain.contains("cypress.io")
+      |> chain.contain("cypress.io")
       |> should.have_class("navbar-brand")
     }),
   ])

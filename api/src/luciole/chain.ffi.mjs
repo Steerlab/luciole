@@ -6,7 +6,7 @@ export function click(prev) {
   return prev.click()
 }
 
-export function contains(prev, content) {
+export function contain(prev, content) {
   return prev.contains(content)
 }
 
