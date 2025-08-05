@@ -26,10 +26,10 @@ export function then(prev, body) {
   return prev.then(body)
 }
 
-export function type_(prev, body) {
-  return prev.type(body)
-}
-
 export function within(prev, body) {
   return prev.within(body)
+}
+
+export function write(prev, body) {
+  return prev.type(body)
 }

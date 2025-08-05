@@ -21,8 +21,8 @@ pub fn invoke(prev: Chainable(a), function_name: String) -> Chainable(b)
 @external(javascript, "./chain.ffi.mjs", "then")
 pub fn then(prev: Chainable(a), body: fn(a) -> b) -> Chainable(a)
 
-@external(javascript, "./chain.ffi.mjs", "type_")
-pub fn type_(prev: Chainable(a), text: String) -> Chainable(a)
-
 @external(javascript, "./chain.ffi.mjs", "within")
 pub fn within(prev: Chainable(a), body: Body(b)) -> Chainable(a)
+
+@external(javascript, "./chain.ffi.mjs", "write")
+pub fn write(prev: Chainable(a), text: String) -> Chainable(a)
