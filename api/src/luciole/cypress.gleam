@@ -9,9 +9,6 @@ pub fn exec(command: String) -> a
 @external(javascript, "./cypress.ffi.mjs", "get")
 pub fn get(selector: String) -> Chainable(a)
 
-@external(javascript, "./cypress.ffi.mjs", "location")
-pub fn location() -> Chainable(a)
-
 @external(javascript, "./cypress.ffi.mjs", "visit")
 pub fn visit(url: String) -> Chainable(Nil)
 

@@ -10,6 +10,10 @@ export function be_visible(prev) {
   return prev.should('be.visible')
 }
 
+export function callback(prev, next) {
+  return prev.should(next)
+}
+
 export function contain(prev, content) {
   return prev.should('contain', content)
 }

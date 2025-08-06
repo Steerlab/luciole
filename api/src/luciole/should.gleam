@@ -9,6 +9,9 @@ pub fn be_less_than(prev: Chainable(a), val: a) -> Chainable(a)
 @external(javascript, "./should.ffi.mjs", "be_visible")
 pub fn be_visible(prev: Chainable(a)) -> Chainable(a)
 
+@external(javascript, "./should.ffi.mjs", "callback")
+pub fn callback(prev: Chainable(a), next: fn(a) -> b) -> Chainable(a)
+
 @external(javascript, "./should.ffi.mjs", "contain")
 pub fn contain(prev: Chainable(a), content content: a) -> Chainable(a)
 
