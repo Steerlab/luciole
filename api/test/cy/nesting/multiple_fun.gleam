@@ -2,21 +2,18 @@ import luciole.{describe, it}
 import luciole/cypress as cy
 
 pub fn complex_describe_it_cy() {
-  describe("outer describe", [visits_the_kitchen(), dummy()])
-}
-
-fn visits_the_kitchen() {
-  it("visits the kitchen", fn() {
-    cy.visit("https://example.cypress.io")
-    cy.contain("Kitchen")
-  })
-}
-
-fn dummy() {
-  describe("inner describe", [
-    it("visits utilites", fn() {
-      cy.visit("https://example.cypress.io/utilities")
-      cy.contain("Utilities")
-    }),
+  describe("outer describe", [
+    it("goes to the Kitchen", fn() { kitchen() }),
+    it("goes to Utilities", fn() { utilities() }),
   ])
+}
+
+fn kitchen() {
+  cy.visit("https://example.cypress.io")
+  cy.contain("Kitchen")
+}
+
+fn utilities() {
+  cy.visit("https://example.cypress.io/utilities")
+  cy.contain("Utilities")
 }

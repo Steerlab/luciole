@@ -66,7 +66,9 @@ More test examples are available in [api/test/cy](api/test/cy).
 
 ### File tree
 
-Your tests should be written in Gleam files located in the folder `test/cy` at the root of your Gleam project. Each test file should contain one test function at top-level, written with the API. The name of the function has to end in "_cy" (and its name will be dropped during transpilation). The file may contain other functions and stuff, but only functions ending in "_cy" will be transpiled.
+Your tests should be written in Gleam files located in the folder `test/cy` at the root of your Gleam project. Each test file should contain one test function at top-level with a name ending in "_cy".
+
+The file may contain other functions and stuff, but only the function ending in "_cy" will be transpiled by Luciole, the others will only be compiled by the Gleam compiler. You can use the API's functions in any function of your test file, except the functions of the base module `luciole.gleam` that should only be called in the "_cy" function. (see [api/test/cy/nesting/multiple_fun.gleam](api/test/cy/nesting/multiple_fun.gleam)).
 
 By default, the CLI will compile the Gleam project to JavaScript, create the AST of each compiled test, edit it to follow Cypress syntax, and generate code from it in a Cypress directory. To do so, the program will look for the name of the Gleam project in the first `gleam.toml` file found by searching up in the file tree. It will also look for the first directory named `cypress` when searching up the file tree.
 
@@ -80,28 +82,28 @@ The Gleam build will be copied to a new path if you specify the option `--buildD
 
 ### Test file
 
-The test function's body is composed of any number of `describe`, `it` and `hooks` blocks. A `describe` can contain any number of these blocks. An `it` and a `hook` contain a single test body.
+The test function has a name ending in "_cy". Its body is composed of any number of `describe`, `it` and `hooks` blocks. A `describe` can contain any number of these blocks. An `it` and a `hook` can only contain a test body. A test body is made of multiple ordered expressions that will check the state of your DOM. You can write these expressions using the functions of the API.
 
-Those formats are correct: ✅
+Those function bodies are correct: ✅
 - `it(body)`: one `it` at top-level
 - `describe([ it(body) ])`: an `it` in a `describe`
 - `describe([ it(body), it(body) ])`: multiple `it` in a `describe`
 - `describe([ describe([ describe([ it(body) ]) ]) ])`: multiple `describe` nested
 - `describe([ it(body), describe([ it(body) ]) ])`: switching between `describe` and `it` in a `describe`
 
-Those formats are not correct: ❌
+Those function bodies are not correct: ❌
 - `describe([ body ])` : a test body outside of `it`
 - `it([ it(body) ])` : multiple `it` nested
 - `it([ describe( it(body) ) ])`: an `it` containing a `describe`
 
-The hooks (`before`, `after`, `before_each`, `after_each`) can be used like the `it`. Hooks, `it` and `describe` are all located in `luciole.gleam` module.
-
 ### Modules organisation
 
-`describe`, `it` and `hooks` are located in the base module `luciole.gleam`.
+Blocks functions like `describe`, `it` and `hooks` are located in the base module `luciole.gleam`.
 
-Fonctions that can be called at the begining of a chain are in `luciole/cypress.gleam` module.
+Fonctions that can be called at the begining of a chain are located in `luciole/cypress.gleam` module.
 
-Fonctions that can be chained after another fonction are in `luciole/chain.gleam` module.
+Fonctions that can be chained after another fonction are located in `luciole/chain.gleam` module.
 
-The `should` fonction of Cypress is implemented with multiple fonctions in `luciole/should.gleam` module.
+The `should()` fonction of Cypress is implemented in the `luciole/should.gleam` module. Each fonction correspond to one of should's options, like `should.equal(x)` in Gleam for `should('equal', x)` in JavaScript.
+
+The `location()`function of Cypress is implemented in the `luciole/location.gleam` module. It has 2 functions, the first one returns the location object: `location.get()`. The second one returns an attribute of the location object as a string, using a variant of the `location.Key` type: `location.get_key(location.Port)`.
