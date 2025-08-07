@@ -1,5 +1,5 @@
-export function contain(content) {
-  return cy.contains(content)
+export function contain(selector) {
+  return cy.contains(selector)
 }
 
 export function exec(command) {
