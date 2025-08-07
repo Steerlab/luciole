@@ -1,41 +1,38 @@
+import gleam/dynamic
 import luciole.{type Chainable}
 
-pub type Key {
-  Hash
-  Host
-  Hostname
-  Href
-  Origin
-  Pathname
-  Port
-  Protocol
-  Search
-  SuperDomain
-  SuperDomainOrigin
-}
+@external(javascript, "./location.ffi.mjs", "get")
+pub fn get() -> Chainable(dynamic.Dynamic)
 
-fn key_to_string(key: Key) {
-  case key {
-    Hash -> "hash"
-    Host -> "host"
-    Hostname -> "hostname"
-    Href -> "href"
-    Origin -> "origin"
-    Pathname -> "pathname"
-    Port -> "port"
-    Protocol -> "protocol"
-    Search -> "search"
-    SuperDomain -> "superDomain"
-    SuperDomainOrigin -> "superDomainOrigin"
-  }
-}
+@external(javascript, "./location.ffi.mjs", "hash")
+pub fn hash() -> Chainable(String)
 
-@external(javascript, "./location.ffi.mjs", "loc_get")
-pub fn get() -> Chainable(a)
+@external(javascript, "./location.ffi.mjs", "host")
+pub fn host() -> Chainable(String)
 
-pub fn get_key(key: Key) -> Chainable(String) {
-  key_to_string(key) |> ext_get_key
-}
+@external(javascript, "./location.ffi.mjs", "hostname")
+pub fn hostname() -> Chainable(String)
 
-@external(javascript, "./location.ffi.mjs", "loc_get_key")
-fn ext_get_key(key: String) -> Chainable(String)
+@external(javascript, "./location.ffi.mjs", "href")
+pub fn href() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "origin")
+pub fn origin() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "pathname")
+pub fn pathname() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "port")
+pub fn port() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "protocol")
+pub fn protocol() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "search")
+pub fn search() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "super_domain")
+pub fn super_domain() -> Chainable(String)
+
+@external(javascript, "./location.ffi.mjs", "super_domain_origin")
+pub fn super_domain_origin() -> Chainable(String)

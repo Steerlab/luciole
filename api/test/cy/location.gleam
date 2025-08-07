@@ -11,23 +11,24 @@ pub fn test_cy() {
     it("tests the location.get function", fn() {
       loc.get()
       |> should.callback(fn(_location) {
-        // Can't pick _location attributes yet...
+        // We could make a location type and decoder to access its attributes
         True
       })
     }),
-    it("tests the loc.get_key function", fn() {
-      loc.get_key(loc.Hash) |> should.equal("")
-      loc.get_key(loc.Host) |> should.equal("example.cypress.io")
-      loc.get_key(loc.Hostname) |> should.equal("example.cypress.io")
-      loc.get_key(loc.Href)
+    it("tests the other location functions", fn() {
+      loc.hash() |> should.equal("")
+      loc.host() |> should.equal("example.cypress.io")
+      loc.hostname() |> should.equal("example.cypress.io")
+      loc.href()
       |> should.equal("https://example.cypress.io/commands/traversal")
-      loc.get_key(loc.Origin) |> should.equal("https://example.cypress.io")
-      loc.get_key(loc.Pathname) |> should.equal("/commands/traversal")
-      loc.get_key(loc.Port) |> should.equal("")
-      loc.get_key(loc.Protocol) |> should.equal("https:")
-      loc.get_key(loc.Search) |> should.equal("")
-      loc.get_key(loc.SuperDomain) |> should.equal("cypress.io")
-      loc.get_key(loc.SuperDomainOrigin) |> should.equal("https://cypress.io")
+      loc.origin() |> should.equal("https://example.cypress.io")
+      loc.pathname() |> should.equal("/commands/traversal")
+      loc.port() |> should.equal("")
+      loc.protocol() |> should.equal("https:")
+      loc.search() |> should.equal("")
+      loc.super_domain() |> should.equal("cypress.io")
+      loc.super_domain_origin()
+      |> should.equal("https://cypress.io")
     }),
   ])
 }
