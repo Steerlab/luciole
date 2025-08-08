@@ -14,12 +14,16 @@ export function callback(prev, next) {
   return prev.should(next)
 }
 
-export function contain(prev, content) {
-  return prev.should('contain', content)
+export function contain(prev, text) {
+  return prev.should('contain', text)
 }
 
 export function equal(prev, val) {
   return prev.should('equal', val)
+}
+
+export function have_attr(prev, attr) {
+  return prev.should('have.attr', attr)
 }
 
 export function have_class(prev, class_) {
