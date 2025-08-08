@@ -44,27 +44,13 @@ program.parse(process.argv)
  */
 async function main(
   gleamArg: string,
-  testsDest: string,
-  buildDest: string,
+  testsDest: string | undefined,
+  buildDest: string | undefined,
 ): Promise<void> {
-  // handle args
-  if (testsDest === undefined) {
-    const defaultDest = path.join('cypress', 'e2e')
-    const errorMsg =
-      'Check if there is a "' +
-      defaultDest +
-      '" folder in "' +
-      gleamArg +
-      '" or its ancestors, or specify the tests destination with the tests-dest argument.'
-    testsDest = await io.findFileInAncestors(defaultDest, gleamArg, errorMsg)
-    testsDest = path.join(testsDest, 'luciole')
-    if (!fs.existsSync(testsDest)) fs.mkdirSync(testsDest, { recursive: true })
-  }
-
+  // set gleamSrc and list testFiles
   let gleamSrc: string = ''
-  let testPrefix = path.join('test', 'cy')
   let testFiles: string[] = []
-
+  let testPrefix = path.join('test', 'cy')
   if (gleamArg.endsWith('.gleam')) {
     if (fs.existsSync(gleamArg)) {
       testFiles = [gleamArg]
@@ -84,15 +70,27 @@ async function main(
     const testFilesRoot = path.resolve(path.join(gleamSrc, testPrefix))
     testFiles = await io.getAllTestFiles(testFilesRoot, '')
   }
+
+  // get args from config file
+  let configVals: {
+    testsDest: string | undefined
+    buildDest: string | undefined
+  } = await io.getArgsFromConfig(gleamSrc)
+
+  // set projectName
   let projectName = await io.getGleamProjectName(gleamSrc)
 
-  // compile and copy the build
+  // set testDest
+  testsDest =
+    testsDest ?? configVals.testsDest ?? (await io.findTestsDest(gleamSrc))
+
+  // set buildDest
+  buildDest = buildDest ?? configVals.buildDest ?? gleamSrc
+  if (!fs.existsSync(buildDest)) fs.mkdirSync(buildDest, { recursive: true })
+
+  // compile Gleam tests and then copy the build if needed
   io.compileGleam(gleamSrc)
-  if (buildDest === undefined) {
-    buildDest = gleamSrc
-    console.log('buildDest: ' + buildDest)
-  } else {
-    console.log('buildDest: ' + buildDest)
+  if (buildDest !== gleamSrc) {
     io.copyGleamBuild(gleamSrc, buildDest)
   }
 

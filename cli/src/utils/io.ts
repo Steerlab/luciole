@@ -136,3 +136,63 @@ export async function findFileInAncestors(
     return findFileInAncestors(search, path.resolve(curdir, '..'), errorMsg)
   }
 }
+
+/**
+ * Get the arguments from the config files "luciole.toml" and then "gleam.toml".
+ * If both files exist, it will use both of their args, by prioritising luciole.toml's args.
+ *
+ * Example in luciole.toml:
+ * ```
+ * testsDest = "cypress/e2e/generated"
+ * ```
+ *
+ * Example in gleam.toml:
+ * ```
+ * [luciole]
+ * testsDest = "cypress/e2e/generated"
+ * ```
+ *
+ */
+export async function getArgsFromConfig(gleamSrc: string): Promise<{
+  testsDest: string | undefined
+  buildDest: string | undefined
+}> {
+  let configPath1 = path.join(gleamSrc, 'luciole.toml')
+  let configPath2 = path.join(gleamSrc, 'gleam.toml')
+  const config = { testsDest: undefined, buildDest: undefined }
+
+  if (fs.existsSync(configPath1)) {
+    const content = await fs.promises.readFile(configPath1, 'utf-8')
+    const data = toml.parse(content)
+    config.testsDest = data.testsDest
+    config.buildDest = data.buildDest
+  }
+
+  if (fs.existsSync(configPath2)) {
+    const content = await fs.promises.readFile(configPath2, 'utf-8')
+    const data = toml.parse(content)
+    if (data.luciole != undefined) {
+      config.testsDest = config.testsDest ?? data.luciole.testsDest
+      config.buildDest = config.buildDest ?? data.luciole.buildDest
+    }
+  }
+
+  return config
+}
+
+/**
+ * Looks for a "cypress/e2e" directory in gleamSrc and its ancestors.
+ */
+export async function findTestsDest(gleamSrc: string) {
+  const defaultDest = path.join('cypress', 'e2e')
+  const errorMsg =
+    'Check if there is a "' +
+    defaultDest +
+    '" folder in "' +
+    gleamSrc +
+    '" or its ancestors, or specify the tests destination with the tests-dest argument.'
+  let testsDest = await findFileInAncestors(defaultDest, gleamSrc, errorMsg)
+  testsDest = path.join(testsDest, 'luciole')
+  if (!fs.existsSync(testsDest)) fs.mkdirSync(testsDest, { recursive: true })
+  return testsDest
+}
