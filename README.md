@@ -66,9 +66,14 @@ More test examples are available in [api/test/cy](api/test/cy).
 
 ### File tree
 
-Your tests should be written in Gleam files located in the folder `test/cy` at the root of your Gleam project. Each test file should contain one test function at top-level with a name ending in "_cy".
+Your tests should be written in Gleam files located in the folder `test/cy` at the root of your Gleam project.
 
-The file may contain other functions and stuff, but only the function ending in "_cy" will be transpiled by Luciole, the others will only be compiled by the Gleam compiler. You can use the API's functions in any function of your test file, except the functions of the base module `luciole.gleam` that should only be called in the "_cy" function. (see [api/test/cy/nesting/multiple_fun.gleam](api/test/cy/nesting/multiple_fun.gleam)).
+Each test file should contain one test function at top-level with a name ending in "_cy".
+
+The file may contain other functions and others as well, but only the function ending in "_cy" will be transpiled by Luciole. You can use the API's functions in any function of your test file, except the functions of the base module `luciole.gleam` that should only be called in the "_cy" function. See [api/test/cy/nesting/multiple_fun.gleam](api/test/cy/nesting/multiple_fun.gleam).
+
+> [!WARNING]
+> If functions of the base module `luciole.gleam` are used in functions not ending in `_cy`, the transpilation will have unexpected behaviours.
 
 By default, the CLI will compile the Gleam project to JavaScript, create the AST of each compiled test, edit it to follow Cypress syntax, and generate code from it in a Cypress directory. To do so, the program will look for the name of the Gleam project in the first `gleam.toml` file found by searching up in the file tree. It will also look for the first directory named `cypress` when searching up the file tree.
 
