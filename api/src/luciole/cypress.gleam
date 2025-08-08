@@ -1,3 +1,4 @@
+import gleam/javascript/promise
 import luciole.{type Chainable}
 
 /// Get the DOM element containing at least the text.
@@ -52,3 +53,11 @@ pub fn visit(url: String) -> Chainable(Nil)
 /// See [Cypress Documentation - wrap](https://docs.cypress.io/api/commands/wrap).
 @external(javascript, "./cypress.ffi.mjs", "wrap")
 pub fn wrap(subject: a) -> Chainable(a)
+
+/// Resolve the promise and wrap it into a Chainable.
+///
+/// Yields the resolved value of the promise.
+///
+/// See [Cypress Documentation - wrap](https://docs.cypress.io/api/commands/wrap).
+@external(javascript, "./cypress.ffi.mjs", "wrap")
+pub fn wrap_resolve(subject: promise.Promise(a)) -> Chainable(a)
