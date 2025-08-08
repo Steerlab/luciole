@@ -50,7 +50,13 @@ async function main(
   // handle args
   if (testsDest === undefined) {
     const defaultDest = path.join('cypress', 'e2e')
-    testsDest = await io.findFileInAncestors(defaultDest, gleamArg)
+    const errorMsg =
+      'Check if there is a "' +
+      defaultDest +
+      '" folder in "' +
+      gleamArg +
+      '" or its ancestors, or specify the tests destination with the tests-dest argument.'
+    testsDest = await io.findFileInAncestors(defaultDest, gleamArg, errorMsg)
     testsDest = path.join(testsDest, 'luciole')
     if (!fs.existsSync(testsDest)) fs.mkdirSync(testsDest, { recursive: true })
   }
@@ -62,10 +68,16 @@ async function main(
   if (gleamArg.endsWith('.gleam')) {
     if (fs.existsSync(gleamArg)) {
       testFiles = [gleamArg]
-      gleamSrc = await io.findFileInAncestors('gleam.toml', gleamArg)
+      const errorMsg =
+        'Check if "' +
+        gleamArg +
+        '" is located in your gleam project (having a "gleam.toml") inside a "' +
+        testPrefix +
+        '" folder.'
+      gleamSrc = await io.findFileInAncestors('gleam.toml', gleamArg, errorMsg)
       gleamSrc = path.resolve(gleamSrc, '..')
     } else {
-      throw Error(gleamArg + " doesn't exist.")
+      throw Error('"' + gleamArg + '" doesn\'t exist.')
     }
   } else {
     gleamSrc = gleamArg
