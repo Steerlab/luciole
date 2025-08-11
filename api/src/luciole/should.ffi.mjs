@@ -30,6 +30,10 @@ export function have_class(prev, class_) {
   return prev.should('have.class', class_)
 }
 
+export function have_length(prev, length) {
+  return prev.should('have.length', length)
+}
+
 export function have_prop(prev, prop) {
   return prev.should('have.prop', prop)
 }

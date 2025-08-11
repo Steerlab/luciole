@@ -102,6 +102,18 @@ pub fn have_class(prev: Chainable(a), class: String) -> Chainable(a)
 /// - have_attr: yields the value of the attribute
 ///
 /// See [Cypress Documentation - should](https://docs.cypress.io/api/commands/should).
+@external(javascript, "./should.ffi.mjs", "have_length")
+pub fn have_length(prev: Chainable(a), length: Int) -> Chainable(a)
+
+/// Create an assertion.
+/// Calls the Cypress should function with this function name as the chainer.
+/// For example: `prev |> should.be_visible()` will become `prev.should('be.visible')`.
+///
+/// Yields the subject it was given, except for:
+/// - have_prop: yields the value of the property
+/// - have_attr: yields the value of the attribute
+///
+/// See [Cypress Documentation - should](https://docs.cypress.io/api/commands/should).
 @external(javascript, "./should.ffi.mjs", "have_prop")
 pub fn have_prop(prev: Chainable(a), prop: String) -> Chainable(a)
 
