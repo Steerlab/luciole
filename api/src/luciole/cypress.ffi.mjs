@@ -2,6 +2,10 @@ export function contain(selector) {
   return cy.contains(selector)
 }
 
+export function document() {
+  return cy.document()
+}
+
 export function exec(command) {
   return cy.exec(command)
 }

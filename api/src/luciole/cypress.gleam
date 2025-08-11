@@ -9,12 +9,20 @@ import luciole.{type Chainable}
 @external(javascript, "./cypress.ffi.mjs", "contain")
 pub fn contain(selector: String) -> Chainable(a)
 
+/// Get the windows.document object.
+///
+/// Yields the windows.document object.
+///
+/// See [Cypress Documentation - contains](https://docs.cypress.io/api/commands/contains).
+@external(javascript, "./cypress.ffi.mjs", "document")
+pub fn document() -> Chainable(a)
+
 /// Execute a system command.
 ///
 /// Yields an object with the following properties:
-/// `code`
-/// `stdout`
-/// `stderr`
+/// - `code`
+/// - `stdout`
+/// - `stderr`
 ///
 /// See [Cypress Documentation - exec](https://docs.cypress.io/api/commands/exec).
 @external(javascript, "./cypress.ffi.mjs", "exec")
