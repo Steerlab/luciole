@@ -1,15 +1,13 @@
 import luciole.{type Chainable}
 
-/// Selects a file in an HTML5 input element.
+/// Clear the value of an input or textarea.
 ///
 /// Unsafe to chain further commands.
 /// Yields the subject it was given.
 ///
-/// - `filepath`: path to a file within the project root
-///
-/// See [Cypress Documentation - selectFile](https://docs.cypress.io/api/commands/selectfile).
-@external(javascript, "./chain.ffi.mjs", "select_file")
-pub fn select_file(prev: Chainable(a), filepath: String) -> Chainable(a)
+/// See [Cypress Documentation - clear](https://docs.cypress.io/api/commands/clear).
+@external(javascript, "./chain.ffi.mjs", "clear")
+pub fn clear(prev: Chainable(a)) -> Chainable(a)
 
 /// Click a DOM element.
 ///
@@ -35,7 +33,7 @@ pub fn contain(prev: Chainable(a), selector: String) -> Chainable(b)
 ///
 /// See [Cypress Documentation - each](https://docs.cypress.io/api/commands/each).
 @external(javascript, "./chain.ffi.mjs", "each")
-pub fn each(prev: Chainable(a), callback_fn: fn(a) -> b) -> Chainable(a)
+pub fn each(prev: Chainable(a), callback: fn(a) -> b) -> Chainable(a)
 
 /// Get the descendent DOM elements of a specific selector.
 ///
@@ -63,32 +61,40 @@ pub fn find(prev: Chainable(a), selector: String) -> Chainable(b)
 ///
 /// See [Cypress Documentation - invoke](https://docs.cypress.io/api/commands/invoke).
 @external(javascript, "./chain.ffi.mjs", "invoke")
-pub fn invoke(prev: Chainable(a), fn_name: String) -> Chainable(b)
+pub fn invoke(prev: Chainable(a), callback: String) -> Chainable(b)
 
-/// Apply a function on the subject of the previous command.
+/// Apply a function on the subject of the previous command. Wraps the result in `Chainable`.
 ///
 /// Unsafe to return a DOM element from the callback function and chain further commands.
 /// Yields what is returned by the callback function.
 ///
 /// See [Cypress Documentation - then](https://docs.cypress.io/api/commands/then).
 @external(javascript, "./chain.ffi.mjs", "then")
-pub fn map(prev: Chainable(a), callback_fn: fn(a) -> b) -> Chainable(b)
+pub fn map(prev: Chainable(a), callback: fn(a) -> b) -> Chainable(b)
 
-/// Apply a function on the subject of the previous command.
+/// Selects a file in an HTML5 input element.
+///
+/// Unsafe to chain further commands.
+/// Yields the subject it was given.
+///
+/// - `filepath`: path to a file within the project root
+///
+/// See [Cypress Documentation - selectFile](https://docs.cypress.io/api/commands/selectfile).
+@external(javascript, "./chain.ffi.mjs", "select_file")
+pub fn select_file(prev: Chainable(a), filepath: String) -> Chainable(a)
+
+/// Apply a function on the subject of the previous command. The function should return a `Chainable`.
 ///
 /// Unsafe to return a DOM element from the callback function and chain further commands.
 /// Yields what is returned by the callback function.
 ///
 /// See [Cypress Documentation - then](https://docs.cypress.io/api/commands/then).
 @external(javascript, "./chain.ffi.mjs", "then")
-pub fn then(
-  prev: Chainable(a),
-  callback_fn: fn(a) -> Chainable(b),
-) -> Chainable(b)
+pub fn then(prev: Chainable(a), callback: fn(a) -> Chainable(b)) -> Chainable(b)
 
 /// Scopes all subsequent Cypress commands to within the element.
 /// Restrict the DOM access of the callback function to the element.
-/// Useful when working within a particular group of elements such as a <form>.
+/// Useful when working within a particular group of elements such as a \<form\>.
 ///
 /// Unsafe to chain further commands.
 /// Yields the subject it was given.
@@ -97,11 +103,11 @@ pub fn then(
 @external(javascript, "./chain.ffi.mjs", "within")
 pub fn within(
   prev: Chainable(a),
-  callback_fn: fn() -> Chainable(b),
+  callback: fn() -> Chainable(b),
 ) -> Chainable(a)
 
-/// Type into a DOM element.
-/// Renamed "write" because "type" is ambiguous.
+/// Type into an input or textarea.
+/// (Named "write" because "type" is ambiguous and is a reserved keyword in Gleam).
 ///
 /// Unsafe to chain further commands.
 /// Yields the subject it was given.
