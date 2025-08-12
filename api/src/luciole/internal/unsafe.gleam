@@ -13,7 +13,6 @@
 /// circumstances. Use that function in your library or framework, not in your
 /// daily code in the codebase. Any code using `unsafe.coerce` when it can be
 /// avoided _will be rejected_ without further research if the code is correct.
-@external(erlang, "unsafe_ffi", "coerce")
 @external(javascript, "./unsafe.ffi.mjs", "coerce")
 pub fn coerce(a: a) -> b
 
@@ -21,6 +20,5 @@ pub fn coerce(a: a) -> b
 /// as monotonic ID, starting with 0. On Erlang, they're generated with
 /// `erlang:unique_integer`. Risk of collision with an existing ID on JS is
 /// higher than Erlang if you're comparing them with other integers.
-@external(erlang, "erlang", "unique_integer")
 @external(javascript, "./unsafe.ffi.mjs", "uniqueId")
 pub fn unique_id() -> Int

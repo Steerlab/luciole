@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import * as fs from 'node:fs'
 import * as io from './utils/io.ts'
 import * as path from 'node:path'

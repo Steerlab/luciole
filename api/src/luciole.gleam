@@ -1,5 +1,5 @@
 import gleam/dynamic.{type Dynamic}
-import unsafe/unsafe
+import luciole/internal/unsafe
 
 pub type Chainable(a)
 
