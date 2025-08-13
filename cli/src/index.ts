@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import * as fs from 'node:fs'
-import * as io from './utils/io.ts'
+import * as io from './utils/io'
 import * as path from 'node:path'
-import * as transpile from './utils/transpile.ts'
+import * as transpile from './utils/transpile'
 import { Command } from 'commander'
-import { showAST } from './utils/show_ast.ts'
-import { setExtensionTo } from './utils/path_helper.ts'
+import { showAST } from './utils/show_ast'
+import { setExtensionTo } from './utils/path_helper'
 
 const program = new Command()
 

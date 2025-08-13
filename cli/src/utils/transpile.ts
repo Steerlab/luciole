@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as espree from 'espree'
 import * as escodegen from 'escodegen'
 import * as estraverse from 'estraverse'
-import { removeFirstPartOfPath } from './path_helper.ts'
+import { removeFirstPartOfPath } from './path_helper'
 import type {
   CallExpression,
   ExpressionStatement,

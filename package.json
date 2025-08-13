@@ -1,6 +1,7 @@
 {
   "name": "luciole",
   "version": "0.1.0",
+  "description": "A CLI for compiling Cypress tests from Gleam to JavaScript.",
   "type": "module",
   "main": "index.js",
   "repository": "git@github.com:Steerlab/luciole.git",
@@ -12,7 +13,7 @@
   },
   "exports": {},
   "bin": {
-    "luciole": "cli/src/index.ts"
+    "luciole": "cli/dist/index.js"
   },
   "devDependencies": {
     "@types/escodegen": "^0.0.10",
@@ -21,6 +22,7 @@
     "@types/node": "^24.0.1",
     "cypress": "^14.4.1",
     "eslint": "^9.32.0",
+    "tsc": "^2.0.4",
     "typescript": "^5.8.3"
   },
   "dependencies": {
