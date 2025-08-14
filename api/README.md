@@ -16,11 +16,16 @@ Luciole is the french word for firefly, but contrary to other bugs, this one wil
 
 ## Installation
 
-Maybe try this? I am not sure how I will release this tool since it's made of a Gleam API and a TypeScript CLI...
+CLI installation:
+```sh
+# depending on your package manager
+yarn add luciole
+npm install luciole
+```
 
+API installation:
 ```sh
 gleam add luciole
-yarn add luciole
 ```
 
 ## Run the CLI
@@ -53,14 +58,14 @@ pub fn example_cy() {
 }
 ```
 
-Then [run the CLI](#run-the-cli) to transpile every files of `test/cy/` to JavaScript files. After that, you can simply open Cypress and check your tests in `e2e/luciole/`.
+Then [run the CLI](#run-the-cli) to transpile every files of `test/cy/` to JavaScript files. After that, you can simply open Cypress and check that your test `e2e/luciole/example.cy.js` runs correctly.
 
 ```sh
 yarn luciole transpile <project-path>
 yarn cypress open
 ```
 
-More test examples are available in [api/test/cy](api/test/cy).
+More test examples are available at [api/test/cy](api/test/cy).
 
 ## More about the API
 
@@ -68,19 +73,21 @@ More test examples are available in [api/test/cy](api/test/cy).
 
 Your tests should be written in Gleam files located in the folder `test/cy` at the root of your Gleam project.
 
-Each test file should contain one test function at top-level with a name ending in "_cy".
+Each test file should contain one test function at top-level ending in "_cy". This is the function that will be transpiled by Luciole.
 
-The file may contain other functions and others as well, but only the function ending in "_cy" will be transpiled by Luciole. You can use the API's functions in any function of your test file, except the functions of the base module `luciole.gleam` that should only be called in the "_cy" function. See [api/test/cy/nesting/multiple_fun.gleam](api/test/cy/nesting/multiple_fun.gleam).
+The file may contain other functions and others as well, but only the function ending in "_cy" will be transpiled. You can use the API's functions in any function of your test file, except the functions of the base module `luciole.gleam` that should only be called in the "_cy" function. See [api/test/cy/nesting/multiple_fun.gleam](api/test/cy/nesting/multiple_fun.gleam) for a test example using multiple functions.
 
 > [!WARNING]
+>
 > If functions of the base module `luciole.gleam` are used in functions not ending in `_cy`, the transpilation will have unexpected behaviours.
 
 By default, the CLI will compile the Gleam project to JavaScript, create the AST of each compiled test, edit it to follow Cypress syntax, and generate code from it in a Cypress directory. To do so, the program will look for the name of the Gleam project in the first `gleam.toml` file found by searching up in the file tree. It will also look for the first directory named `cypress` when searching up the file tree.
 
-The Gleam build will be copied to a new path if you specify the option `--buildDest <new-path-to-build>`. Test files imports will be updated based on the new location of the build.
+If you specify the option `--buildDest <new-path-to-build>`, the Gleam build will be copied to a new path and generated files' imports will be updated based on its new location. Otherwise, generated files' imports will import files from the origin location of the build.
 
 > [!WARNING]
-> Files in `cypress/e2e/luciole/` will be overwritten by the new generated tests. You can avoid this by specifying another test destination, like this:
+>
+> Files in `cypress/e2e/luciole/` will be overwritten by the new generated tests. You can avoid this by specifying another test destination using:
 > ```
 > yarn luciole transpile <project-path> <test-destination>
 > ```
@@ -93,22 +100,22 @@ Those function bodies are correct: ✅
 - `it(body)`: one `it` at top-level
 - `describe([ it(body) ])`: an `it` in a `describe`
 - `describe([ it(body), it(body) ])`: multiple `it` in a `describe`
-- `describe([ describe([ describe([ it(body) ]) ]) ])`: multiple `describe` nested
+- `describe([ describe([ describe([ it(body) ]) ]) ])`: nested `describe`
 - `describe([ it(body), describe([ it(body) ]) ])`: switching between `describe` and `it` in a `describe`
 
 Those function bodies are not correct: ❌
 - `describe([ body ])` : a test body outside of `it`
-- `it([ it(body) ])` : multiple `it` nested
+- `it([ it(body) ])` : nested `it`
 - `it([ describe( it(body) ) ])`: an `it` containing a `describe`
 
 ### Modules organisation
 
 Blocks functions like `describe`, `it` and `hooks` are located in the base module `luciole.gleam`.
 
-Fonctions that can be called at the begining of a chain are located in `luciole/cypress.gleam` module.
+Fonctions that can be called at the begining of a chain are located in the `luciole/cypress.gleam` module.
 
-Fonctions that can be chained after another fonction are located in `luciole/chain.gleam` module.
+Fonctions that can be chained after a Chainable object returned by another fonction are located in the `luciole/chain.gleam` module.
 
-The `should()` fonction of Cypress is implemented in the `luciole/should.gleam` module. Each fonction correspond to one of should's options, like `should.equal(x)` in Gleam for `should('equal', x)` in JavaScript.
+The `should()` fonction of Cypress is implemented in the `luciole/should.gleam` module. Each fonction of the API corresponds to one of its options in Cypress, like `should.equal(x)` in Gleam correspond to `should('equal', x)` in JavaScript.
 
-The `location()`function of Cypress is implemented in the `luciole/location.gleam` module. It has 2 functions, the first one returns the location object: `location.get()`. The second one returns an attribute of the location object as a string, using a variant of the `location.Key` type: `location.get_key(location.Port)`.
+The `location()`function of Cypress is implemented in the `luciole/location.gleam` module. Each fonction of the API corresponds to one of its options in Cypress, like `location.port(x)` in Gleam correspond to `location('port', x)` in JavaScript.
