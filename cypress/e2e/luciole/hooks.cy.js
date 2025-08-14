@@ -2,7 +2,6 @@ import { toList } from './../../../api/build/dev/javascript/luciole/gleam.mjs'
 import * as $chain from './../../../api/build/dev/javascript/luciole/luciole/chain.mjs'
 import * as $cy from './../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from './../../../api/build/dev/javascript/luciole/luciole/should.mjs'
-
 describe('project', function () {
   before('go to Traversal page', function () {
     $cy.visit('https://example.cypress.io/commands/traversal')

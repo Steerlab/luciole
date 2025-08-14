@@ -2,7 +2,6 @@ import { toList } from './../../../api/build/dev/javascript/luciole/gleam.mjs'
 import * as $cy from './../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $loc from './../../../api/build/dev/javascript/luciole/luciole/location.mjs'
 import * as $should from './../../../api/build/dev/javascript/luciole/luciole/should.mjs'
-
 describe("let's test the location", function () {
   beforeEach('visit the page', function () {
     return $cy.visit('https://example.cypress.io/commands/traversal')

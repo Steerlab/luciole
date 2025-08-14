@@ -6,7 +6,6 @@ import * as $ch from './../../../api/build/dev/javascript/luciole/luciole/chain.
 import * as $cy from './../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from './../../../api/build/dev/javascript/luciole/luciole/should.mjs'
 import { set_html_attrs } from './../../../api/build/dev/javascript/luciole/cy/all.ffi.mjs'
-
 describe("Testing functions I didn't test before", function () {
   beforeEach('Set the example document', function () {
     let _pipe = $cy.document()

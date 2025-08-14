@@ -2,7 +2,6 @@ import { toList } from './../../../api/build/dev/javascript/luciole/gleam.mjs'
 import * as $chain from './../../../api/build/dev/javascript/luciole/luciole/chain.mjs'
 import * as $cy from './../../../api/build/dev/javascript/luciole/luciole/cypress.mjs'
 import * as $should from './../../../api/build/dev/javascript/luciole/luciole/should.mjs'
-
 describe("let's test should", function () {
   it('compares values', function () {
     let _pipe = $cy.wrap(3)
