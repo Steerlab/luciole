@@ -1,6 +1,6 @@
 {
   "name": "luciole",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A CLI for compiling Cypress tests from Gleam to JavaScript.",
   "main": "index.js",
   "repository": "git@github.com:Steerlab/luciole.git",

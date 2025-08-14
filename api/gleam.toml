@@ -1,5 +1,5 @@
 name = "luciole"
-version = "0.1.0"
+version = "0.1.5"
 target = "javascript"
 description = "An API for writting Cypress tests in Gleam."
 licences = ["MIT"]
