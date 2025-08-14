@@ -7,8 +7,9 @@
   "author": "<adele.desmazi@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "luciole": "node cli/src/index.ts",
-    "cypress:open": "cypress open"
+    "luciole": "node dist/index.js",
+    "cypress:open": "cypress open",
+    "cy:open": "cypress open"
   },
   "exports": {},
   "bin": {
